@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Timetable Manager</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+  :root {
+    --bg: #f5f6fa;
+    --surface: #ffffff;
+    --surface2: #f0f2f8;
+    --border: #e2e6f0;
+    --border-strong: #c8cedf;
+    --text: #1a1d2e;
+    --text-secondary: #5a607a;
+    --text-muted: #8b91a8;
+    --accent: #3b5bdb;
+    --accent-light: #e8ecff;
+    --accent-dark: #2f4ac7;
+    --success: #2f9e44;
+    --success-light: #ebfbee;
+    --danger: #e03131;
+    --danger-light: #fff5f5;
+    --warning: #e67700;
+    --warning-light: #fff9db;
+    --radius: 8px;
+    --radius-lg: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,.1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+
+  /* ── App shell ── */
+  .app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+  .navbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: var(--shadow);
+  }
+  .navbar-brand { display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 600; color: var(--text); }
+  .navbar-brand i { color: var(--accent); font-size: 22px; }
+  .navbar-brand span { color: var(--accent); }
+  .nav-tabs { display: flex; gap: 2px; }
+  .nav-tab {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border-radius: var(--radius);
+    border: none; background: transparent;
+    color: var(--text-secondary); cursor: pointer;
+    font-size: 13px; font-weight: 500; transition: all .15s;
+  }
+  .nav-tab:hover { background: var(--surface2); color: var(--text); }
+  .nav-tab.active { background: var(--accent-light); color: var(--accent); }
+  .nav-tab .badge {
+    background: var(--danger); color: #fff;
+    border-radius: 10px; padding: 1px 6px; font-size: 11px; font-weight: 600;
+    display: none;
+  }
+  .nav-actions { display: flex; gap: 8px; align-items: center; }
+
+  /* ── Main content ── */
+  .main { flex: 1; padding: 24px; max-width: 1200px; margin: 0 auto; width: 100%; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-size: 13px; font-weight: 600; color: var(--text-secondary);
+    text-transform: uppercase; letter-spacing: .06em;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .card-title i { font-size: 15px; }
+
+  /* ── Grid layout ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .col { display: flex; flex-direction: column; gap: 16px; }
+
+  /* ── Form elements ── */
+  label.field-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); display: block; margin-bottom: 5px; }
+  input[type="text"], input[type="number"], input[type="time"], select, textarea {
+    width: 100%; padding: 8px 11px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 13px;
+    transition: border-color .15s;
+    font-family: inherit;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(59,91,219,.12);
+  }
+  .input-row { display: flex; gap: 8px; align-items: flex-end; }
+  .input-row > * { flex: 1; }
+  .input-row > .btn { flex: 0 0 auto; }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: var(--radius);
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all .15s;
+    white-space: nowrap;
+  }
+  .btn:hover { background: var(--surface2); border-color: var(--border-strong); }
+  .btn:active { transform: scale(.98); }
+  .btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn.primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+  .btn.success { background: var(--success); color: #fff; border-color: var(--success); }
+  .btn.success:hover { background: #267a38; }
+  .btn.danger { color: var(--danger); border-color: #fca5a5; background: var(--danger-light); }
+  .btn.danger:hover { background: #fee2e2; }
+  .btn.sm { padding: 5px 10px; font-size: 12px; }
+  .btn.xs { padding: 3px 7px; font-size: 11px; }
+  .btn.full { width: 100%; justify-content: center; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+  /* ── Tags ── */
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; min-height: 32px; margin-top: 10px; }
+  .tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 12px; font-weight: 500;
+    border: 1px solid transparent;
+  }
+  .tag.class-tag    { background: #fff0f6; color: #c2255c; border-color: #fcc2d7; }
+  .tag.room-tag     { background: #fff9db; color: #e67700; border-color: #ffec99; }
+  .tag.subject-tag  { background: var(--accent-light); color: var(--accent); border-color: #bac8ff; }
+  .tag.teacher-tag  { background: #ebfbee; color: #2f9e44; border-color: #b2f2bb; }
+  .tag-x { cursor: pointer; font-size: 13px; line-height: 1; opacity: .6; }
+  .tag-x:hover { opacity: 1; }
+
+  /* ── Slots table ── */
+  .table-wrap { overflow-x: auto; }
+  table.data-table { width: 100%; border-collapse: collapse; }
+  .data-table th {
+    text-align: left; padding: 8px 10px;
+    font-size: 11px; font-weight: 600; color: var(--text-secondary);
+    text-transform: uppercase; letter-spacing: .05em;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .data-table td { padding: 6px 10px; border-bottom: 1px solid var(--border); }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table input { padding: 5px 8px; }
+
+  /* ── Assign area ── */
+  .assign-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface2);
+    margin-bottom: 8px;
+  }
+  .assign-label { flex: 1; }
+  .assign-label .name { font-weight: 500; font-size: 13px; }
+  .assign-label .sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .assign-row select { width: 200px; flex: 0 0 200px; }
+
+  /* ── Stats bar ── */
+  .stats-bar { display: flex; gap: 12px; flex-wrap: wrap; }
+  .stat-card {
+    flex: 1; min-width: 90px;
+    background: var(--surface2);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+  }
+  .stat-n { font-size: 24px; font-weight: 700; color: var(--accent); }
+  .stat-l { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  /* ── Precheck ── */
+  .check-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; border-radius: var(--radius);
+    font-size: 13px; margin-bottom: 6px;
+  }
+  .check-item.ok { background: var(--success-light); color: #2f9e44; }
+  .check-item.fail { background: var(--danger-light); color: var(--danger); }
+  .check-item i { font-size: 16px; flex-shrink: 0; }
+
+  /* ── Timetable grid ── */
+  .tt-controls {
+    display: flex; gap: 10px; align-items: center;
+    flex-wrap: wrap; margin-bottom: 16px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+  .tt-controls label { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+  .tt-controls select { width: auto; display: inline-block; min-width: 140px; }
+  .tt-wrap { overflow-x: auto; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow); }
+  table.tt { width: 100%; border-collapse: collapse; min-width: 640px; }
+  .tt th {
+    background: var(--surface2);
+    padding: 10px 12px;
+    font-size: 12px; font-weight: 600;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    text-align: center;
+  }
+  .tt td {
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 4px;
+    min-width: 110px;
+    height: 64px;
+    vertical-align: top;
+    background: var(--surface);
+    transition: background .12s;
+  }
+  .tt td:hover { background: #f8f9ff; }
+  .tt .slot-label {
+    background: var(--surface2);
+    text-align: right;
+    padding: 8px 10px;
+    width: 100px; min-width: 100px;
+    vertical-align: middle;
+  }
+  .slot-label .slot-name { font-size: 12px; font-weight: 600; color: var(--text); }
+  .slot-label .slot-time { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+  .break-row td { background: #fffbe6 !important; text-align: center; font-size: 12px; color: var(--warning); font-style: italic; padding: 8px; }
+
+  /* ── Lecture cell ── */
+  .lecture {
+    border-radius: 6px;
+    padding: 5px 7px;
+    height: 100%;
+    cursor: grab;
+    user-select: none;
+    position: relative;
+    transition: box-shadow .15s, transform .1s;
+    border: 1px solid transparent;
+  }
+  .lecture:active { cursor: grabbing; transform: scale(.97); }
+  .lecture.drag-over { box-shadow: 0 0 0 2px var(--accent); }
+  .lec-subject { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lec-meta { font-size: 10px; margin-top: 3px; opacity: .8; display: flex; flex-direction: column; gap: 1px; }
+  .lec-del {
+    position: absolute; top: 3px; right: 5px;
+    font-size: 13px; cursor: pointer; opacity: 0;
+    font-weight: 700; transition: opacity .15s;
+    line-height: 1;
+  }
+  .lecture:hover .lec-del { opacity: .7; }
+  .lec-del:hover { opacity: 1 !important; }
+  .empty-cell {
+    height: 100%; display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted); font-size: 18px; opacity: .3;
+    cursor: pointer;
+  }
+  .empty-cell:hover { opacity: .7; background: var(--accent-light); border-radius: 6px; }
+
+  /* ── Legend ── */
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-secondary); }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+  /* ── Conflict report ── */
+  .conflict-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  .conflict-item.teacher { background: #fff0f6; color: #c2255c; border: 1px solid #fcc2d7; }
+  .conflict-item.room    { background: var(--warning-light); color: var(--warning); border: 1px solid #ffec99; }
+  .conflict-item.gap     { background: #f3f0ff; color: #6741d9; border: 1px solid #d0bfff; }
+  .conflict-item i { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── Teacher load bar ── */
+  .load-row { margin-bottom: 14px; }
+  .load-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px; }
+  .load-bar-bg { background: var(--surface2); border-radius: 4px; height: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .load-bar { height: 100%; border-radius: 4px; transition: width .5s ease; }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: #1a1d2e; color: #fff;
+    padding: 12px 20px; border-radius: var(--radius);
+    font-size: 13px; font-weight: 500;
+    z-index: 9999; opacity: 0;
+    transform: translateY(8px);
+    transition: opacity .3s, transform .3s;
+    pointer-events: none;
+    box-shadow: var(--shadow-md);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ── Divider ── */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .nav-tabs { display: none; }
+    .main { padding: 12px; }
+    .mobile-menu { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+    .mobile-tab { flex: 1; justify-content: center; min-width: 80px; }
+  }
+  @media (min-width: 769px) { .mobile-menu { display: none; } }
+
+  /* ── Print ── */
+  @media print {
+    .navbar, .tt-controls, .mobile-menu { display: none !important; }
+    .panel { display: block !important; }
+    #tab-setup, #tab-generate, #tab-conflicts { display: none !important; }
+    body { background: #fff; }
+  }
+
+  /* ── Helpers ── */
+  .mt-4 { margin-top: 16px; }
+  .mt-2 { margin-top: 8px; }
+  .flex-gap { display: flex; gap: 10px; flex-wrap: wrap; }
+  .text-muted { color: var(--text-muted); font-size: 12px; }
+  .section-gap { margin-top: 20px; }
+  .empty-state { text-align: center; padding: 32px; color: var(--text-muted); }
+  .empty-state i { font-size: 40px; display: block; margin-bottom: 10px; opacity: .4; }
+</style>
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <i class="ti ti-calendar-event"></i>
+      Timetable <span>Manager</span>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab('setup')"><i class="ti ti-settings"></i> Setup</button>
+      <button class="nav-tab" onclick="switchTab('assign')"><i class="ti ti-link"></i> Assign</button>
+      <button class="nav-tab" onclick="switchTab('generate')"><i class="ti ti-wand"></i> Generate</button>
+      <button class="nav-tab" onclick="switchTab('view')"><i class="ti ti-layout-grid"></i> Timetable</button>
+      <button class="nav-tab" onclick="switchTab('conflicts')">
+        <i class="ti ti-alert-triangle"></i> Conflicts
+        <span class="badge" id="conflict-badge">0</span>
+      </button>
+    </div>
+    <div class="nav-actions">
+      <button class="btn sm" onclick="saveData()"><i class="ti ti-device-floppy"></i> Save</button>
+      <button class="btn sm" onclick="loadData()"><i class="ti ti-upload"></i> Load</button>
+      <button class="btn sm primary" onclick="exportAll()"><i class="ti ti-download"></i> Export</button>
+    </div>
+  </nav>
+
+  <!-- Mobile nav -->
+  <div class="main" style="padding-bottom:0">
+    <div class="mobile-menu">
+      <button class="btn mobile-tab" onclick="switchTab('setup')"><i class="ti ti-settings"></i> Setup</button>
+      <button class="btn mobile-tab" onclick="switchTab('assign')"><i class="ti ti-link"></i> Assign</button>
+      <button class="btn mobile-tab" onclick="switchTab('generate')"><i class="ti ti-wand"></i> Generate</button>
+      <button class="btn mobile-tab" onclick="switchTab('view')"><i class="ti ti-layout-grid"></i> Timetable</button>
+      <button class="btn mobile-tab" onclick="switchTab('conflicts')"><i class="ti ti-alert-triangle"></i> Conflicts</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- ══════════════ SETUP TAB ══════════════ -->
+    <div class="panel active" id="tab-setup">
+      <div class="grid-2">
+        <div class="col">
+
+          <!-- Time Slots -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="ti ti-clock"></i> Time Slots</div>
+              <button class="btn sm" onclick="addSlot()"><i class="ti ti-plus"></i> Add slot</button>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table" id="slots-table">
+                <thead><tr><th>#</th><th>Label</th><th>Start</th><th>End</th><th>Break?</th><th></th></tr></thead>
+                <tbody id="slots-body"></tbody>
+              </table>
+            </div>
+            <p class="text-muted mt-2">Mark non-teaching rows (lunch, recess) as Break.</p>
+          </div>
+
+          <!-- Working Days -->
+          <div class="card">
+            <div class="card-title" style="margin-bottom:14px"><i class="ti ti-calendar-week"></i> Working Days</div>
+            <div style="display:flex;flex-wrap:wrap;gap:12px" id="days-wrap">
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="checkbox" checked onchange="toggleDay('Mon')"> Monday</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="checkbox" checked onchange="toggleDay('Tue')"> Tuesday</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="checkbox" checked onchange="toggleDay('Wed')"> Wednesday</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="checkbox" checked onchange="toggleDay('Thu')"> Thursday</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="checkbox" checked onchange="toggleDay('Fri')"> Friday</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="checkbox" onchange="toggleDay('Sat')"> Saturday</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="checkbox" onchange="toggleDay('Sun')"> Sunday</label>
+            </div>
+          </div>
+
+          <!-- Rooms -->
+          <div class="card">
+            <div class="card-title" style="margin-bottom:14px"><i class="ti ti-building"></i> Rooms / Venues</div>
+            <div class="input-row">
+              <div>
+                <label class="field-label">Room name</label>
+                <input type="text" id="room-input" placeholder="e.g. Room 101, Lab A, Hall B" onkeydown="if(event.key==='Enter')addItem('room')">
+              </div>
+              <div style="flex:0 0 auto;padding-top:18px">
+                <button class="btn primary" onclick="addItem('room')"><i class="ti ti-plus"></i> Add</button>
+              </div>
+            </div>
+            <div class="tag-list" id="room-tags"></div>
+          </div>
+
+        </div>
+        <div class="col">
+
+          <!-- Classes -->
+          <div class="card">
+            <div class="card-title" style="margin-bottom:14px"><i class="ti ti-users"></i> Classes / Sections / Batches</div>
+            <div class="input-row">
+              <div>
+                <label class="field-label">Class name</label>
+                <input type="text" id="class-input" placeholder="e.g. 10-A, MBA Sem 1, B.Sc Year 2" onkeydown="if(event.key==='Enter')addItem('class')">
+              </div>
+              <div style="flex:0 0 auto;padding-top:18px">
+                <button class="btn primary" onclick="addItem('class')"><i class="ti ti-plus"></i> Add</button>
+              </div>
+            </div>
+            <div class="tag-list" id="class-tags"></div>
+          </div>
+
+          <!-- Subjects -->
+          <div class="card">
+            <div class="card-title" style="margin-bottom:14px"><i class="ti ti-book"></i> Subjects</div>
+            <div class="input-row">
+              <div>
+                <label class="field-label">Subject name</label>
+                <input type="text" id="subject-input" placeholder="e.g. Mathematics" onkeydown="if(event.key==='Enter')addItem('subject')">
+              </div>
+              <div style="width:90px;flex:0 0 90px">
+                <label class="field-label">Hrs/week</label>
+                <input type="number" id="subject-hrs" min="1" max="20" value="3" placeholder="3">
+              </div>
+              <div style="flex:0 0 auto;padding-top:18px">
+                <button class="btn primary" onclick="addItem('subject')"><i class="ti ti-plus"></i> Add</button>
+              </div>
+            </div>
+            <div class="tag-list" id="subject-tags"></div>
+          </div>
+
+          <!-- Teachers -->
+          <div class="card">
+            <div class="card-title" style="margin-bottom:14px"><i class="ti ti-user-check"></i> Teachers</div>
+            <div class="input-row">
+              <div>
+                <label class="field-label">Teacher name</label>
+                <input type="text" id="teacher-input" placeholder="e.g. Dr. Patel, Ms. Sharma" onkeydown="if(event.key==='Enter')addItem('teacher')">
+              </div>
+              <div style="flex:0 0 auto;padding-top:18px">
+                <button class="btn primary" onclick="addItem('teacher')"><i class="ti ti-plus"></i> Add</button>
+              </div>
+            </div>
+            <div class="tag-list" id="teacher-tags"></div>
+          </div>
+
+        </div>
+      </div>
+      <div style="margin-top:20px">
+        <button class="btn primary full" style="font-size:14px;padding:12px" onclick="switchTab('assign')">
+          Next: Assign Subjects to Teachers <i class="ti ti-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ══════════════ ASSIGN TAB ══════════════ -->
+    <div class="panel" id="tab-assign">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-link"></i> Subject — Teacher Assignment</div>
+          <button class="btn sm" onclick="autoAssign()"><i class="ti ti-wand"></i> Auto-assign evenly</button>
+        </div>
+        <p class="text-muted" style="margin-bottom:14px">Assign each subject to the teacher who will teach it. Teachers with multiple subjects will be scheduled with equal distribution.</p>
+        <div id="assign-area"></div>
+      </div>
+      <div style="margin-top:16px">
+        <button class="btn primary full" style="font-size:14px;padding:12px" onclick="switchTab('generate')">
+          Next: Generate Timetable <i class="ti ti-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ══════════════ GENERATE TAB ══════════════ -->
+    <div class="panel" id="tab-generate">
+      <div class="grid-2" style="margin-bottom:16px">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:14px"><i class="ti ti-settings-2"></i> Generation Settings</div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div>
+              <label class="field-label">Max lectures per day per class</label>
+              <input type="number" id="max-per-day" value="6" min="1" max="12">
+            </div>
+            <div>
+              <label class="field-label">Allow same subject back-to-back?</label>
+              <select id="allow-repeat">
+                <option value="no">No — spread across days</option>
+                <option value="yes">Yes — consecutive allowed</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label">Compact schedule (no free periods for students)</label>
+              <select id="compact">
+                <option value="yes">Yes — eliminate gaps</option>
+                <option value="no">No — allow gaps</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:14px"><i class="ti ti-chart-bar"></i> Overview</div>
+          <div class="stats-bar" id="summary-stats"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title" style="margin-bottom:14px"><i class="ti ti-checklist"></i> Pre-generation Checks</div>
+        <div id="precheck-list"></div>
+      </div>
+
+      <button class="btn success full" style="font-size:15px;padding:14px" onclick="generate()" id="gen-btn">
+        <i class="ti ti-wand"></i> Auto-generate Timetable
+      </button>
+    </div>
+
+    <!-- ══════════════ VIEW TAB ══════════════ -->
+    <div class="panel" id="tab-view">
+      <div class="tt-controls">
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <label>View for</label>
+          <select id="view-by" onchange="renderTimetable()" style="min-width:120px">
+            <option value="class">Class</option>
+            <option value="teacher">Teacher</option>
+            <option value="room">Room</option>
+          </select>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <label id="entity-label">Class</label>
+          <select id="entity-select" onchange="renderTimetable()" style="min-width:160px"></select>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:flex-end">
+          <button class="btn sm" onclick="window.print()"><i class="ti ti-printer"></i> Print</button>
+          <button class="btn sm primary" onclick="exportCSV()"><i class="ti ti-table-export"></i> Export CSV</button>
+        </div>
+      </div>
+      <div class="legend" id="legend" style="margin-bottom:12px"></div>
+      <div class="tt-wrap">
+        <table class="tt" id="tt-table"></table>
+      </div>
+      <p class="text-muted" style="margin-top:8px"><i class="ti ti-drag-drop"></i> Drag lectures to swap slots &nbsp;·&nbsp; Click × to delete &nbsp;·&nbsp; Click empty cell to add</p>
+    </div>
+
+    <!-- ══════════════ CONFLICTS TAB ══════════════ -->
+    <div class="panel" id="tab-conflicts">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="ti ti-alert-triangle"></i> Conflict Report</div>
+            <button class="btn sm" onclick="renderConflicts()"><i class="ti ti-refresh"></i> Refresh</button>
+          </div>
+          <div id="conflict-report">
+            <div class="empty-state"><i class="ti ti-shield-check"></i>Generate a timetable first</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:16px"><i class="ti ti-chart-bar"></i> Teacher Load Distribution</div>
+          <div id="teacher-load">
+            <div class="empty-state"><i class="ti ti-users"></i>No data yet</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app-shell -->
+
+<div class="toast" id="toast"></div>
+
+<!-- Hidden file input for load -->
+<input type="file" id="file-input" accept=".json" style="display:none" onchange="handleFileLoad(event)">
+
+<script>
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+const COLORS = [
+  {bg:'#e8ecff',color:'#3b5bdb',border:'#bac8ff'},
+  {bg:'#ebfbee',color:'#2f9e44',border:'#b2f2bb'},
+  {bg:'#fff9db',color:'#e67700',border:'#ffec99'},
+  {bg:'#fff0f6',color:'#c2255c',border:'#fcc2d7'},
+  {bg:'#f3f0ff',color:'#6741d9',border:'#d0bfff'},
+  {bg:'#e3fafc',color:'#0c8599',border:'#99e9f2'},
+  {bg:'#fff4e6',color:'#d9480f',border:'#ffd8a8'},
+  {bg:'#f8f9fa',color:'#495057',border:'#dee2e6'},
+  {bg:'#fce7f3',color:'#9d174d',border:'#f9a8d4'},
+  {bg:'#ecfdf5',color:'#065f46',border:'#6ee7b7'},
+];
+
+let S = {
+  slots: [
+    {id:1,label:'Period 1',start:'08:00',end:'08:45',isBreak:false},
+    {id:2,label:'Period 2',start:'08:50',end:'09:35',isBreak:false},
+    {id:3,label:'Period 3',start:'09:40',end:'10:25',isBreak:false},
+    {id:4,label:'Break',start:'10:25',end:'10:45',isBreak:true},
+    {id:5,label:'Period 4',start:'10:45',end:'11:30',isBreak:false},
+    {id:6,label:'Period 5',start:'11:35',end:'12:20',isBreak:false},
+    {id:7,label:'Lunch',start:'12:20',end:'13:00',isBreak:true},
+    {id:8,label:'Period 6',start:'13:00',end:'13:45',isBreak:false},
+  ],
+  days: ['Mon','Tue','Wed','Thu','Fri'],
+  classes: [],
+  rooms: [],
+  subjects: [],   // [{name, hrsPerWeek}]
+  teachers: [],
+  assignments: {}, // subject -> teacher
+  timetable: {},   // class -> day -> slotId -> {subject, teacher, room}
+};
+let slotCounter = 9;
+let dragSrc = null;
+
+// ══════════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════════
+function switchTab(t) {
+  document.querySelectorAll('.nav-tab,.mobile-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll(`[onclick="switchTab('${t}')"]`).forEach(b => b.classList.add('active'));
+  document.getElementById('tab-' + t).classList.add('active');
+  if (t === 'assign') renderAssignArea();
+  if (t === 'generate') renderGenerate();
+  if (t === 'view') renderView();
+  if (t === 'conflicts') renderConflicts();
+}
+
+// ══════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════
+function toast(msg, type='') {
+  const el = document.getElementById('toast');
+  el.innerHTML = `<i class="ti ti-${type==='error'?'alert-circle':type==='ok'?'circle-check':'info-circle'}"></i> ${msg}`;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ══════════════════════════════════════════
+//  SLOTS
+// ══════════════════════════════════════════
+function renderSlots() {
+  const tbody = document.getElementById('slots-body');
+  tbody.innerHTML = '';
+  S.slots.forEach((s, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="color:var(--text-muted);font-size:12px;width:28px">${i+1}</td>
+      <td><input type="text" value="${s.label}" oninput="S.slots[${i}].label=this.value"></td>
+      <td><input type="time" value="${s.start}" oninput="S.slots[${i}].start=this.value" style="min-width:100px"></td>
+      <td><input type="time" value="${s.end}" oninput="S.slots[${i}].end=this.value" style="min-width:100px"></td>
+      <td style="text-align:center"><input type="checkbox" ${s.isBreak?'checked':''} onchange="S.slots[${i}].isBreak=this.checked"></td>
+      <td><button class="btn xs danger" onclick="S.slots.splice(${i},1);renderSlots()"><i class="ti ti-x"></i></button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function addSlot() {
+  S.slots.push({id:slotCounter++, label:'Period '+slotCounter, start:'14:00', end:'14:45', isBreak:false});
+  renderSlots();
+}
+
+// ══════════════════════════════════════════
+//  DAYS
+// ══════════════════════════════════════════
+function toggleDay(d) {
+  if (S.days.includes(d)) S.days = S.days.filter(x => x !== d);
+  else S.days.push(d);
+}
+
+// ══════════════════════════════════════════
+//  TAG ITEMS
+// ══════════════════════════════════════════
+function addItem(type) {
+  const inp = document.getElementById(type + '-input');
+  const val = inp.value.trim();
+  if (!val) return;
+  if (type === 'subject') {
+    const hrs = parseInt(document.getElementById('subject-hrs').value) || 3;
+    if (S.subjects.find(s => s.name === val)) { toast('Subject already exists', 'error'); return; }
+    S.subjects.push({name: val, hrsPerWeek: hrs});
+    document.getElementById('subject-hrs').value = '3';
+  } else {
+    if (S[type+'s'].includes(val)) { toast(val + ' already exists', 'error'); return; }
+    S[type+'s'].push(val);
+  }
+  inp.value = '';
+  inp.focus();
+  renderTags(type);
+}
+
+function removeItem(type, val) {
+  if (type === 'subject') {
+    S.subjects = S.subjects.filter(s => s.name !== val);
+    delete S.assignments[val];
+  } else {
+    S[type+'s'] = S[type+'s'].filter(x => x !== val);
+    if (type === 'teacher') {
+      for (const sub in S.assignments) {
+        if (S.assignments[sub] === val) delete S.assignments[sub];
+      }
+    }
+  }
+  renderTags(type);
+}
+
+function renderTags(type) {
+  const container = document.getElementById(type + '-tags');
+  const items = type === 'subject' ? S.subjects.map(s => s.name) : S[type+'s'];
+  container.innerHTML = items.map(val => {
+    const suffix = type === 'subject' ? ` <small style="opacity:.7">(${S.subjects.find(s=>s.name===val).hrsPerWeek}h/wk)</small>` : '';
+    return `<span class="tag ${type}-tag">${val}${suffix} <span class="tag-x" onclick="removeItem('${type}','${val.replace(/'/g,"\\'")}')">×</span></span>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+//  ASSIGN
+// ══════════════════════════════════════════
+function renderAssignArea() {
+  const area = document.getElementById('assign-area');
+  if (!S.subjects.length || !S.teachers.length) {
+    area.innerHTML = '<div class="empty-state"><i class="ti ti-link-off"></i>Add subjects and teachers in Setup first.</div>';
+    return;
+  }
+  area.innerHTML = S.subjects.map(sub => {
+    const opts = S.teachers.map(t =>
+      `<option value="${t}" ${S.assignments[sub.name]===t?'selected':''}>${t}</option>`
+    ).join('');
+    return `<div class="assign-row">
+      <div class="assign-label">
+        <div class="name">${sub.name}</div>
+        <div class="sub">${sub.hrsPerWeek} hrs/week across all classes</div>
+      </div>
+      <select onchange="S.assignments['${sub.name.replace(/'/g,"\\'")}'] = this.value">
+        <option value="">— select teacher —</option>
+        ${opts}
+      </select>
+    </div>`;
+  }).join('');
+}
+
+function autoAssign() {
+  if (!S.subjects.length || !S.teachers.length) { toast('Add subjects and teachers first', 'error'); return; }
+  // Round-robin by teacher load
+  const load = {};
+  S.teachers.forEach(t => load[t] = 0);
+  S.subjects.forEach(sub => {
+    const teacher = S.teachers.reduce((a,b) => load[a] <= load[b] ? a : b);
+    S.assignments[sub.name] = teacher;
+    load[teacher] += sub.hrsPerWeek;
+  });
+  renderAssignArea();
+  toast('Auto-assigned evenly across teachers', 'ok');
+}
+
+// ══════════════════════════════════════════
+//  GENERATE
+// ══════════════════════════════════════════
+function renderGenerate() {
+  document.getElementById('summary-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-n">${S.classes.length}</div><div class="stat-l">Classes</div></div>
+    <div class="stat-card"><div class="stat-n">${S.subjects.length}</div><div class="stat-l">Subjects</div></div>
+    <div class="stat-card"><div class="stat-n">${S.teachers.length}</div><div class="stat-l">Teachers</div></div>
+    <div class="stat-card"><div class="stat-n">${S.rooms.length}</div><div class="stat-l">Rooms</div></div>
+    <div class="stat-card"><div class="stat-n">${S.days.length}</div><div class="stat-l">Days/wk</div></div>
+  `;
+  const teachSlots = S.slots.filter(s => !s.isBreak);
+  const available = S.days.length * teachSlots.length;
+  const totalHrs = S.subjects.reduce((a,b) => a+b.hrsPerWeek, 0);
+  const unassigned = S.subjects.filter(s => !S.assignments[s.name]);
+
+  const checks = [
+    {ok: S.classes.length > 0, msg: S.classes.length ? `${S.classes.length} class(es) defined` : 'No classes defined'},
+    {ok: S.subjects.length > 0, msg: S.subjects.length ? `${S.subjects.length} subject(s) defined` : 'No subjects defined'},
+    {ok: S.teachers.length > 0, msg: S.teachers.length ? `${S.teachers.length} teacher(s) defined` : 'No teachers defined'},
+    {ok: S.rooms.length > 0, msg: S.rooms.length ? `${S.rooms.length} room(s) defined` : 'No rooms / venues defined'},
+    {ok: unassigned.length === 0, msg: unassigned.length ? `Unassigned: ${unassigned.map(u=>u.name).join(', ')}` : 'All subjects assigned to teachers'},
+    {ok: totalHrs <= available, msg: totalHrs <= available ? `Hours OK: ${totalHrs} needed, ${available} slots available/class/week` : `Too many hours: ${totalHrs} needed but only ${available} slots available`},
+  ];
+  document.getElementById('precheck-list').innerHTML = checks.map(c =>
+    `<div class="check-item ${c.ok?'ok':'fail'}"><i class="ti ti-${c.ok?'circle-check':'circle-x'}"></i>${c.msg}</div>`
+  ).join('');
+  const canGen = checks.every(c => c.ok);
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = !canGen;
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function generate() {
+  const {classes, days, subjects, teachers, rooms, slots, assignments} = S;
+  const allowRepeat = document.getElementById('allow-repeat').value === 'yes';
+  const compact = document.getElementById('compact').value === 'yes';
+  const teachSlots = slots.filter(s => !s.isBreak);
+
+  const tt = {};
+  classes.forEach(cls => {
+    tt[cls] = {};
+    days.forEach(day => { tt[cls][day] = {}; });
+  });
+
+  const teacherBusy = {};
+  const roomBusy = {};
+  teachers.forEach(t => { teacherBusy[t] = {}; days.forEach(d => { teacherBusy[t][d] = {}; }); });
+  rooms.forEach(r => { roomBusy[r] = {}; days.forEach(d => { roomBusy[r][d] = {}; }); });
+
+  classes.forEach(cls => {
+    const lectures = [];
+    subjects.forEach(sub => {
+      for (let i = 0; i < sub.hrsPerWeek; i++) lectures.push({subject: sub.name, teacher: assignments[sub.name]});
+    });
+    const shuffled = shuffle(lectures);
+
+    shuffled.forEach(lec => {
+      let placed = false;
+      const tryDays = shuffle([...days]);
+      for (const day of tryDays) {
+        if (placed) break;
+        const trySlots = shuffle([...teachSlots]);
+        for (const slot of trySlots) {
+          if (placed) break;
+          const sid = slot.id;
+          if (tt[cls][day][sid]) continue;
+          if (lec.teacher && teacherBusy[lec.teacher][day][sid]) continue;
+          if (!allowRepeat) {
+            const dayVals = Object.values(tt[cls][day]);
+            if (dayVals.some(v => v && v.subject === lec.subject)) continue;
+          }
+          const availRooms = rooms.filter(r => !roomBusy[r][day][sid]);
+          if (!availRooms.length) continue;
+          const room = availRooms[0];
+          tt[cls][day][sid] = {subject: lec.subject, teacher: lec.teacher || '—', room};
+          if (lec.teacher) teacherBusy[lec.teacher][day][sid] = true;
+          roomBusy[room][day][sid] = true;
+          placed = true;
+        }
+      }
+    });
+
+    // Compact: remove gaps between lectures
+    if (compact) {
+      days.forEach(day => {
+        const filled = teachSlots.filter(s => tt[cls][day][s.id]).map(s => ({sid:s.id, data:tt[cls][day][s.id]}));
+        teachSlots.forEach(s => delete tt[cls][day][s.id]);
+        filled.forEach((f, i) => {
+          if (teachSlots[i]) {
+            // Re-check teacher/room at new slot
+            const ns = teachSlots[i];
+            const d = f.data;
+            if (d.teacher && d.teacher !== '—') teacherBusy[d.teacher][day][ns.id] = true;
+            if (d.room) roomBusy[d.room][day][ns.id] = true;
+            tt[cls][day][ns.id] = d;
+          }
+        });
+      });
+    }
+  });
+
+  S.timetable = tt;
+  renderView();
+  checkConflicts();
+  switchTab('view');
+  toast('Timetable generated successfully!', 'ok');
+}
+
+// ══════════════════════════════════════════
+//  VIEW
+// ══════════════════════════════════════════
+function getColor(subject) {
+  const idx = S.subjects.findIndex(s => s.name === subject);
+  return COLORS[((idx % COLORS.length) + COLORS.length) % COLORS.length];
+}
+
+function renderView() {
+  const viewBy = document.getElementById('view-by').value;
+  const sel = document.getElementById('entity-select');
+  document.getElementById('entity-label').textContent = viewBy === 'class' ? 'Class' : viewBy === 'teacher' ? 'Teacher' : 'Room';
+  const options = viewBy === 'class' ? S.classes : viewBy === 'teacher' ? S.teachers : S.rooms;
+  const prev = sel.value;
+  sel.innerHTML = options.map(o => `<option value="${o}">${o}</option>`).join('');
+  if (prev && options.includes(prev)) sel.value = prev;
+  renderTimetable();
+}
+
+function renderTimetable() {
+  const table = document.getElementById('tt-table');
+  const viewBy = document.getElementById('view-by').value;
+  const entity = document.getElementById('entity-select').value;
+
+  if (!entity || !Object.keys(S.timetable).length) {
+    table.innerHTML = '<tr><td colspan="99" style="padding:32px;text-align:center;color:var(--text-muted)">Generate a timetable first using the Generate tab.</td></tr>';
+    return;
+  }
+
+  const {days, slots, timetable, classes} = S;
+  let html = `<thead><tr><th style="width:110px">Slot</th>`;
+  days.forEach(d => html += `<th>${d}</th>`);
+  html += `</tr></thead><tbody>`;
+
+  slots.forEach(slot => {
+    if (slot.isBreak) {
+      html += `<tr class="break-row"><td class="slot-label"><div class="slot-name">${slot.label}</div><div class="slot-time">${slot.start}–${slot.end}</div></td>`;
+      html += `<td colspan="${days.length}">— ${slot.label} —</td></tr>`;
+      return;
+    }
+    html += `<tr>`;
+    html += `<td class="slot-label"><div class="slot-name">${slot.label}</div><div class="slot-time">${slot.start}–${slot.end}</div></td>`;
+
+    days.forEach(day => {
+      // Get entry based on viewBy
+      let entry = null;
+      let dispClass = entity;
+      if (viewBy === 'class') {
+        entry = timetable[entity]?.[day]?.[slot.id] || null;
+      } else if (viewBy === 'teacher') {
+        // Find which class+slot has this teacher
+        for (const cls of classes) {
+          const e = timetable[cls]?.[day]?.[slot.id];
+          if (e && e.teacher === entity) { entry = {...e, cls}; dispClass = cls; break; }
+        }
+      } else {
+        for (const cls of classes) {
+          const e = timetable[cls]?.[day]?.[slot.id];
+          if (e && e.room === entity) { entry = {...e, cls}; dispClass = cls; break; }
+        }
+      }
+
+      if (entry) {
+        const c = getColor(entry.subject);
+        const clsForDrop = viewBy === 'class' ? entity : (entry.cls || entity);
+        html += `<td ondragover="event.preventDefault()" ondrop="dropLecture(event,'${clsForDrop}','${day}',${slot.id})">
+          <div class="lecture" draggable="true"
+            ondragstart="dragLecture(event,'${clsForDrop}','${day}',${slot.id})"
+            style="background:${c.bg};color:${c.color};border-color:${c.border}">
+            <span class="lec-del" onclick="removeLecture('${clsForDrop}','${day}',${slot.id})">×</span>
+            <div class="lec-subject">${entry.subject}</div>
+            <div class="lec-meta">
+              <span><i class="ti ti-user" style="font-size:10px"></i> ${entry.teacher}</span>
+              <span><i class="ti ti-building" style="font-size:10px"></i> ${entry.room} ${viewBy!=='class'?`· ${dispClass}`:''}</span>
+            </div>
+          </div>
+        </td>`;
+      } else {
+        const clsForAdd = viewBy === 'class' ? entity : '';
+        html += `<td ondragover="event.preventDefault()" ondrop="dropLecture(event,'${clsForAdd||classes[0]}','${day}',${slot.id})">
+          <div class="empty-cell" onclick="addLecturePrompt('${clsForAdd||classes[0]}','${day}',${slot.id})">+</div>
+        </td>`;
+      }
+    });
+    html += `</tr>`;
+  });
+
+  html += '</tbody>';
+  table.innerHTML = html;
+
+  // Legend
+  document.getElementById('legend').innerHTML = S.subjects.map(sub => {
+    const c = getColor(sub.name);
+    return `<span class="legend-item"><span class="legend-dot" style="background:${c.bg};border:1px solid ${c.border}"></span>${sub.name}</span>`;
+  }).join('');
+}
+
+// ── Drag & Drop ──
+function dragLecture(e, cls, day, slotId) {
+  dragSrc = {cls, day, slotId};
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function dropLecture(e, cls, day, slotId) {
+  e.preventDefault();
+  if (!dragSrc) return;
+  const src = dragSrc;
+  if (src.cls === cls && src.day === day && src.slotId === slotId) { dragSrc = null; return; }
+  const srcEntry = S.timetable[src.cls]?.[src.day]?.[src.slotId];
+  const dstEntry = S.timetable[cls]?.[day]?.[slotId];
+  if (!S.timetable[cls]) S.timetable[cls] = {};
+  if (!S.timetable[cls][day]) S.timetable[cls][day] = {};
+  S.timetable[cls][day][slotId] = srcEntry;
+  if (dstEntry) S.timetable[src.cls][src.day][src.slotId] = dstEntry;
+  else delete S.timetable[src.cls][src.day][src.slotId];
+  dragSrc = null;
+  renderTimetable();
+  checkConflicts();
+  toast('Lecture moved');
+}
+
+function removeLecture(cls, day, slotId) {
+  if (S.timetable[cls]?.[day]) delete S.timetable[cls][day][slotId];
+  renderTimetable();
+  checkConflicts();
+}
+
+function addLecturePrompt(cls, day, slotId) {
+  if (!S.subjects.length) { toast('No subjects defined', 'error'); return; }
+  const sub = prompt('Subject:\n' + S.subjects.map(s=>s.name).join(', '));
+  if (!sub || !S.subjects.find(s=>s.name===sub)) return;
+  const teacher = S.assignments[sub] || (S.teachers[0] || '—');
+  const room = S.rooms[0] || 'TBD';
+  if (!S.timetable[cls]) S.timetable[cls] = {};
+  if (!S.timetable[cls][day]) S.timetable[cls][day] = {};
+  S.timetable[cls][day][slotId] = {subject: sub, teacher, room};
+  renderTimetable();
+  checkConflicts();
+}
+
+// ══════════════════════════════════════════
+//  CONFLICTS
+// ══════════════════════════════════════════
+function checkConflicts() {
+  const {timetable, days, slots, classes} = S;
+  const conflicts = [];
+  const teachSlots = slots.filter(s => !s.isBreak);
+
+  days.forEach(day => {
+    teachSlots.forEach(slot => {
+      const teacherMap = {}, roomMap = {};
+      classes.forEach(cls => {
+        const e = timetable[cls]?.[day]?.[slot.id];
+        if (!e) return;
+        if (e.teacher && e.teacher !== '—') {
+          if (teacherMap[e.teacher]) conflicts.push({type:'teacher', msg:`${e.teacher} is double-booked on ${day} – ${slot.label} (${cls} & ${teacherMap[e.teacher]})`});
+          else teacherMap[e.teacher] = cls;
+        }
+        if (e.room) {
+          if (roomMap[e.room]) conflicts.push({type:'room', msg:`${e.room} is double-booked on ${day} – ${slot.label} (${cls} & ${roomMap[e.room]})`});
+          else roomMap[e.room] = cls;
+        }
+      });
+    });
+  });
+
+  classes.forEach(cls => {
+    days.forEach(day => {
+      const arr = teachSlots.map(s => !!timetable[cls]?.[day]?.[s.id]);
+      const first = arr.indexOf(true);
+      const last = arr.lastIndexOf(true);
+      if (first >= 0 && last >= 0) {
+        for (let i = first; i <= last; i++) {
+          if (!arr[i]) conflicts.push({type:'gap', msg:`Free period gap for ${cls} on ${day} – slot ${i+1} is empty between lectures`});
+        }
+      }
+    });
+  });
+
+  const badge = document.getElementById('conflict-badge');
+  badge.textContent = conflicts.length;
+  badge.style.display = conflicts.length ? 'inline' : 'none';
+  return conflicts;
+}
+
+function renderConflicts() {
+  const conflicts = checkConflicts();
+  const report = document.getElementById('conflict-report');
+  if (!conflicts.length) {
+    report.innerHTML = '<div class="check-item ok"><i class="ti ti-shield-check"></i> No conflicts detected — timetable is clean!</div>';
+  } else {
+    const icons = {teacher:'user-exclamation', room:'building-minus', gap:'arrows-split-2'};
+    report.innerHTML = conflicts.map(c =>
+      `<div class="conflict-item ${c.type}"><i class="ti ti-${icons[c.type]}"></i>${c.msg}</div>`
+    ).join('');
+  }
+
+  const load = document.getElementById('teacher-load');
+  if (!S.teachers.length) { load.innerHTML = '<div class="empty-state"><i class="ti ti-users"></i>No teachers defined</div>'; return; }
+  const counts = {};
+  S.teachers.forEach(t => counts[t] = 0);
+  S.classes.forEach(cls => {
+    S.days.forEach(day => {
+      S.slots.filter(s => !s.isBreak).forEach(slot => {
+        const e = S.timetable[cls]?.[day]?.[slot.id];
+        if (e?.teacher && e.teacher !== '—') counts[e.teacher] = (counts[e.teacher]||0)+1;
+      });
+    });
+  });
+  const max = Math.max(1, ...Object.values(counts));
+  const barColors = ['#3b5bdb','#2f9e44','#e67700','#c2255c','#6741d9','#0c8599'];
+  load.innerHTML = S.teachers.map((t, i) => {
+    const n = counts[t] || 0;
+    const pct = Math.round(n / max * 100);
+    return `<div class="load-row">
+      <div class="load-label"><span><strong>${t}</strong></span><span style="color:var(--text-secondary)">${n} lectures/week</span></div>
+      <div class="load-bar-bg"><div class="load-bar" style="width:${pct}%;background:${barColors[i%barColors.length]}"></div></div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+//  SAVE / LOAD / EXPORT
+// ══════════════════════════════════════════
+function saveData() {
+  const json = JSON.stringify(S, null, 2);
+  localStorage.setItem('timetable-manager-data', json);
+  // Also download
+  const blob = new Blob([json], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'timetable-data.json';
+  a.click();
+  toast('Saved & downloaded as JSON', 'ok');
+}
+
+function loadData() {
+  document.getElementById('file-input').click();
+}
+
+function handleFileLoad(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = evt => {
+    try {
+      const data = JSON.parse(evt.target.result);
+      S = data;
+      renderSlots();
+      renderTags('class'); renderTags('room'); renderTags('subject'); renderTags('teacher');
+      toast('Data loaded successfully', 'ok');
+    } catch(err) {
+      toast('Invalid file format', 'error');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function exportCSV() {
+  const cls = document.getElementById('entity-select').value;
+  if (!cls || document.getElementById('view-by').value !== 'class') { toast('Switch to Class view to export', 'error'); return; }
+  const {days, slots, timetable} = S;
+  let csv = `Slot,Start,End,${days.join(',')}\n`;
+  slots.forEach(slot => {
+    if (slot.isBreak) { csv += `${slot.label},${slot.start},${slot.end},${days.map(()=>'[Break]').join(',')}\n`; return; }
+    csv += `"${slot.label}",${slot.start},${slot.end},`;
+    csv += days.map(day => {
+      const e = timetable[cls]?.[day]?.[slot.id];
+      return e ? `"${e.subject} / ${e.teacher} / ${e.room}"` : '—';
+    }).join(',') + '\n';
+  });
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `timetable-${cls}.csv`;
+  a.click();
+  toast('CSV exported', 'ok');
+}
+
+function exportAll() {
+  if (Object.keys(S.timetable).length) exportCSV();
+  else saveData();
+}
+
+// ══════════════════════════════════════════
+//  INIT — restore from localStorage
+// ══════════════════════════════════════════
+(function init() {
+  try {
+    const saved = localStorage.getItem('timetable-manager-data');
+    if (saved) {
+      const data = JSON.parse(saved);
+      S = data;
+    }
+  } catch(e) {}
+  renderSlots();
+  renderTags('class'); renderTags('room'); renderTags('subject'); renderTags('teacher');
+})();
+</script>
+</body>
+</html>
