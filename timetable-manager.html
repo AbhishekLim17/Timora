@@ -709,6 +709,10 @@ function toggleDay(d) {
   else S.days.push(d);
 }
 
+function getCollectionKey(type) {
+  return type === 'class' ? 'classes' : type + 's';
+}
+
 // ══════════════════════════════════════════
 //  TAG ITEMS
 // ══════════════════════════════════════════
@@ -722,8 +726,9 @@ function addItem(type) {
     S.subjects.push({name: val, hrsPerWeek: hrs});
     document.getElementById('subject-hrs').value = '3';
   } else {
-    if (S[type+'s'].includes(val)) { toast(val + ' already exists', 'error'); return; }
-    S[type+'s'].push(val);
+    const key = getCollectionKey(type);
+    if (S[key].includes(val)) { toast(val + ' already exists', 'error'); return; }
+    S[key].push(val);
   }
   inp.value = '';
   inp.focus();
@@ -735,7 +740,8 @@ function removeItem(type, val) {
     S.subjects = S.subjects.filter(s => s.name !== val);
     delete S.assignments[val];
   } else {
-    S[type+'s'] = S[type+'s'].filter(x => x !== val);
+    const key = getCollectionKey(type);
+    S[key] = S[key].filter(x => x !== val);
     if (type === 'teacher') {
       for (const sub in S.assignments) {
         if (S.assignments[sub] === val) delete S.assignments[sub];
@@ -747,7 +753,7 @@ function removeItem(type, val) {
 
 function renderTags(type) {
   const container = document.getElementById(type + '-tags');
-  const items = type === 'subject' ? S.subjects.map(s => s.name) : S[type+'s'];
+  const items = type === 'subject' ? S.subjects.map(s => s.name) : S[getCollectionKey(type)];
   container.innerHTML = items.map(val => {
     const suffix = type === 'subject' ? ` <small style="opacity:.7">(${S.subjects.find(s=>s.name===val).hrsPerWeek}h/wk)</small>` : '';
     return `<span class="tag ${type}-tag">${val}${suffix} <span class="tag-x" onclick="removeItem('${type}','${val.replace(/'/g,"\\'")}')">×</span></span>`;
