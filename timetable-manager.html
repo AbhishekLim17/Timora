@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Timora</title>
+<title>Timetable Manager</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 <style>
   :root {
@@ -45,10 +45,9 @@
     position: sticky; top: 0; z-index: 100;
     box-shadow: var(--shadow);
   }
-  .navbar-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 0; font-size: 17px; font-weight: 600; color: var(--text); line-height: 1.05; }
+  .navbar-brand { display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 600; color: var(--text); }
   .navbar-brand i { color: var(--accent); font-size: 22px; }
-  .navbar-brand .brand-title { color: var(--accent); display: flex; align-items: center; gap: 10px; }
-  .navbar-brand .brand-subtitle { color: var(--text-muted); font-size: 11px; font-weight: 500; margin-left: 32px; }
+  .navbar-brand span { color: var(--accent); }
   .nav-tabs { display: flex; gap: 2px; }
   .nav-tab {
     display: flex; align-items: center; gap: 6px;
@@ -152,6 +151,8 @@
   .tag.room-tag     { background: #fff9db; color: #e67700; border-color: #ffec99; }
   .tag.subject-tag  { background: var(--accent-light); color: var(--accent); border-color: #bac8ff; }
   .tag.teacher-tag  { background: #ebfbee; color: #2f9e44; border-color: #b2f2bb; }
+  .tag.teacher-tag.visiting { background: #f3f0ff; color: #6741d9; border-color: #d0bfff; }
+  .visiting-pill { font-size: 10px; background: #6741d9; color: #fff; border-radius: 10px; padding: 1px 6px; margin-left: 4px; font-weight: 600; }
   .tag-x { cursor: pointer; font-size: 13px; line-height: 1; opacity: .6; }
   .tag-x:hover { opacity: 1; }
 
@@ -318,6 +319,42 @@
   }
   .toast.show { opacity: 1; transform: translateY(0); }
 
+  /* ── Modal ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.45);
+    z-index: 500; display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.hidden { display: none; }
+  .modal {
+    background: var(--surface); border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md); width: 100%; max-width: 520px;
+    max-height: 80vh; overflow-y: auto; padding: 24px;
+  }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .modal-title { font-size: 15px; font-weight: 600; }
+  .avail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin-top: 12px; }
+  .avail-slot {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px; border: 1px solid var(--border);
+    border-radius: var(--radius); font-size: 12px; cursor: pointer;
+    background: var(--surface2); transition: all .12s;
+  }
+  .avail-slot.selected { background: #f3f0ff; border-color: #d0bfff; color: #6741d9; font-weight: 500; }
+  .avail-slot input[type=checkbox] { accent-color: #6741d9; }
+
+  /* ── Assign multi-select ── */
+  .multi-select-wrap { position: relative; }
+  .multi-pills { display: flex; flex-wrap: wrap; gap: 4px; min-height: 36px; padding: 4px 8px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); cursor: pointer; align-items: center; }
+  .multi-pill { background: var(--accent-light); color: var(--accent); border: 1px solid #bac8ff; border-radius: 20px; padding: 2px 8px; font-size: 11px; font-weight: 500; display: flex; align-items: center; gap: 4px; }
+  .multi-pill-x { cursor: pointer; opacity: .6; font-size: 12px; }
+  .multi-pill-x:hover { opacity: 1; }
+  .multi-dropdown { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-md); z-index: 200; max-height: 200px; overflow-y: auto; display: none; }
+  .multi-dropdown.open { display: block; }
+  .multi-opt { padding: 8px 12px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+  .multi-opt:hover { background: var(--surface2); }
+  .multi-opt.selected { color: var(--accent); font-weight: 500; }
+
   /* ── Divider ── */
   .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
 
@@ -355,13 +392,13 @@
   <!-- Navbar -->
   <nav class="navbar">
     <div class="navbar-brand">
-      <div class="brand-title"><i class="ti ti-calendar-event"></i><span>Timora</span></div>
-      <div class="brand-subtitle">Timetable Manager</div>
+      <i class="ti ti-calendar-event"></i>
+      Timetable <span>Manager</span>
     </div>
     <div class="nav-tabs">
       <button class="nav-tab active" onclick="switchTab('setup')"><i class="ti ti-settings"></i> Setup</button>
       <button class="nav-tab" onclick="switchTab('assign')"><i class="ti ti-link"></i> Assign</button>
-      <button class="nav-tab" onclick="switchTab('generate')"><i class="ti ti-sparkles"></i> Generate</button>
+      <button class="nav-tab" onclick="switchTab('generate')"><i class="ti ti-wand"></i> Generate</button>
       <button class="nav-tab" onclick="switchTab('view')"><i class="ti ti-layout-grid"></i> Timetable</button>
       <button class="nav-tab" onclick="switchTab('conflicts')">
         <i class="ti ti-alert-triangle"></i> Conflicts
@@ -380,7 +417,7 @@
     <div class="mobile-menu">
       <button class="btn mobile-tab" onclick="switchTab('setup')"><i class="ti ti-settings"></i> Setup</button>
       <button class="btn mobile-tab" onclick="switchTab('assign')"><i class="ti ti-link"></i> Assign</button>
-      <button class="btn mobile-tab" onclick="switchTab('generate')"><i class="ti ti-sparkles"></i> Generate</button>
+      <button class="btn mobile-tab" onclick="switchTab('generate')"><i class="ti ti-wand"></i> Generate</button>
       <button class="btn mobile-tab" onclick="switchTab('view')"><i class="ti ti-layout-grid"></i> Timetable</button>
       <button class="btn mobile-tab" onclick="switchTab('conflicts')"><i class="ti ti-alert-triangle"></i> Conflicts</button>
     </div>
@@ -424,7 +461,7 @@
 
           <!-- Rooms -->
           <div class="card">
-            <div class="card-title" style="margin-bottom:14px"><i class="ti ti-building"></i> Rooms / Venues</div>
+            <div class="card-title" style="margin-bottom:14px"><i class="ti ti-building"></i> Rooms / Venues <span style="font-size:11px;font-weight:400;color:var(--text-muted);text-transform:none;letter-spacing:0">(optional)</span></div>
             <div class="input-row">
               <div>
                 <label class="field-label">Room name</label>
@@ -435,6 +472,7 @@
               </div>
             </div>
             <div class="tag-list" id="room-tags"></div>
+            <p class="text-muted" style="margin-top:8px">Leave empty to skip room assignment — lectures will be scheduled without a venue.</p>
           </div>
 
         </div>
@@ -482,11 +520,15 @@
                 <label class="field-label">Teacher name</label>
                 <input type="text" id="teacher-input" placeholder="e.g. Dr. Patel, Ms. Sharma" onkeydown="if(event.key==='Enter')addItem('teacher')">
               </div>
-              <div style="flex:0 0 auto;padding-top:18px">
+              <div style="flex:0 0 auto;display:flex;align-items:center;gap:8px;padding-top:18px">
+                <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-secondary);white-space:nowrap;cursor:pointer">
+                  <input type="checkbox" id="teacher-visiting"> Visiting
+                </label>
                 <button class="btn primary" onclick="addItem('teacher')"><i class="ti ti-plus"></i> Add</button>
               </div>
             </div>
             <div class="tag-list" id="teacher-tags"></div>
+            <p class="text-muted" style="margin-top:8px">Check "Visiting" for faculty with restricted availability. Click <i class="ti ti-clock" style="font-size:11px"></i> on a visiting teacher to set their available slots.</p>
           </div>
 
         </div>
@@ -503,7 +545,7 @@
       <div class="card">
         <div class="card-header">
           <div class="card-title"><i class="ti ti-link"></i> Subject — Teacher Assignment</div>
-          <button class="btn sm" onclick="autoAssign()"><i class="ti ti-sparkles"></i> Auto-assign evenly</button>
+          <button class="btn sm" onclick="autoAssign()"><i class="ti ti-wand"></i> Auto-assign evenly</button>
         </div>
         <p class="text-muted" style="margin-bottom:14px">Assign each subject to the teacher who will teach it. Teachers with multiple subjects will be scheduled with equal distribution.</p>
         <div id="assign-area"></div>
@@ -553,7 +595,7 @@
       </div>
 
       <button class="btn success full" style="font-size:15px;padding:14px" onclick="generate()" id="gen-btn">
-        <i class="ti ti-sparkles"></i> Auto-generate Timetable
+        <i class="ti ti-wand"></i> Auto-generate Timetable
       </button>
     </div>
 
@@ -574,7 +616,7 @@
         </div>
         <div style="margin-left:auto;display:flex;gap:8px;align-items:flex-end">
           <button class="btn sm" onclick="window.print()"><i class="ti ti-printer"></i> Print</button>
-          <button class="btn sm primary" onclick="exportCSV()"><i class="ti ti-file-export"></i> Export CSV</button>
+          <button class="btn sm primary" onclick="exportCSV()"><i class="ti ti-table-export"></i> Export CSV</button>
         </div>
       </div>
       <div class="legend" id="legend" style="margin-bottom:12px"></div>
@@ -593,7 +635,7 @@
             <button class="btn sm" onclick="renderConflicts()"><i class="ti ti-refresh"></i> Refresh</button>
           </div>
           <div id="conflict-report">
-            <div class="empty-state"><i class="ti ti-shield-check-filled"></i>Generate a timetable first</div>
+            <div class="empty-state"><i class="ti ti-shield-check"></i>Generate a timetable first</div>
           </div>
         </div>
         <div class="card">
@@ -612,6 +654,22 @@
 
 <!-- Hidden file input for load -->
 <input type="file" id="file-input" accept=".json" style="display:none" onchange="handleFileLoad(event)">
+
+<!-- Visiting Faculty Availability Modal -->
+<div class="modal-overlay hidden" id="avail-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title"><i class="ti ti-clock" style="color:#6741d9"></i> Visiting Faculty — Available Slots</div>
+      <button class="btn sm" onclick="closeAvailModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <p class="text-muted" style="margin-bottom:4px">Select the time slots when <strong id="avail-teacher-name"></strong> is available to teach. The scheduler will only place their lectures in these slots.</p>
+    <div class="avail-grid" id="avail-grid"></div>
+    <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn" onclick="closeAvailModal()">Cancel</button>
+      <button class="btn primary" onclick="saveAvailability()"><i class="ti ti-check"></i> Save Availability</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ══════════════════════════════════════════
@@ -644,10 +702,10 @@ let S = {
   days: ['Mon','Tue','Wed','Thu','Fri'],
   classes: [],
   rooms: [],
-  subjects: [],   // [{name, hrsPerWeek}]
-  teachers: [],
-  assignments: {}, // subject -> teacher
-  timetable: {},   // class -> day -> slotId -> {subject, teacher, room}
+  subjects: [],     // [{name, hrsPerWeek}]
+  teachers: [],     // [{name, isVisiting, availability}]  availability: {day: [slotId,...]}
+  assignments: {},  // subject -> teacher name (string)
+  timetable: {},    // class -> day -> slotId -> {subject, teacher, room}
 };
 let slotCounter = 9;
 let dragSrc = null;
@@ -671,7 +729,7 @@ function switchTab(t) {
 // ══════════════════════════════════════════
 function toast(msg, type='') {
   const el = document.getElementById('toast');
-  el.innerHTML = `<i class="ti ti-${type==='error'?'circle-x-filled':type==='ok'?'circle-check-filled':'sparkles'}"></i> ${msg}`;
+  el.innerHTML = `<i class="ti ti-${type==='error'?'alert-circle':type==='ok'?'circle-check':'info-circle'}"></i> ${msg}`;
   el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), 2800);
 }
@@ -709,10 +767,6 @@ function toggleDay(d) {
   else S.days.push(d);
 }
 
-function getCollectionKey(type) {
-  return type === 'class' ? 'classes' : type + 's';
-}
-
 // ══════════════════════════════════════════
 //  TAG ITEMS
 // ══════════════════════════════════════════
@@ -725,10 +779,14 @@ function addItem(type) {
     if (S.subjects.find(s => s.name === val)) { toast('Subject already exists', 'error'); return; }
     S.subjects.push({name: val, hrsPerWeek: hrs});
     document.getElementById('subject-hrs').value = '3';
+  } else if (type === 'teacher') {
+    if (S.teachers.find(t => t.name === val)) { toast(val + ' already exists', 'error'); return; }
+    const isVisiting = document.getElementById('teacher-visiting').checked;
+    S.teachers.push({name: val, isVisiting, availability: {}});
+    document.getElementById('teacher-visiting').checked = false;
   } else {
-    const key = getCollectionKey(type);
-    if (S[key].includes(val)) { toast(val + ' already exists', 'error'); return; }
-    S[key].push(val);
+    if (S[type+'s'].includes(val)) { toast(val + ' already exists', 'error'); return; }
+    S[type+'s'].push(val);
   }
   inp.value = '';
   inp.focus();
@@ -739,30 +797,111 @@ function removeItem(type, val) {
   if (type === 'subject') {
     S.subjects = S.subjects.filter(s => s.name !== val);
     delete S.assignments[val];
-  } else {
-    const key = getCollectionKey(type);
-    S[key] = S[key].filter(x => x !== val);
-    if (type === 'teacher') {
-      for (const sub in S.assignments) {
-        if (S.assignments[sub] === val) delete S.assignments[sub];
-      }
+  } else if (type === 'teacher') {
+    S.teachers = S.teachers.filter(t => t.name !== val);
+    for (const sub in S.assignments) {
+      if (S.assignments[sub] === val) delete S.assignments[sub];
     }
+  } else {
+    S[type+'s'] = S[type+'s'].filter(x => x !== val);
   }
   renderTags(type);
 }
 
 function renderTags(type) {
   const container = document.getElementById(type + '-tags');
-  const items = type === 'subject' ? S.subjects.map(s => s.name) : S[getCollectionKey(type)];
+  if (!container) return;
+  if (type === 'teacher') {
+    // Normalize: ensure teachers is always array of objects
+    S.teachers = (S.teachers || []).map(t =>
+      typeof t === 'string' ? {name: t, isVisiting: false, availability: {}} : t
+    );
+    container.innerHTML = S.teachers.map(t => {
+      const esc = (t.name || '').replace(/'/g, "\\'");
+      const visitingPill = t.isVisiting ? `<span class="visiting-pill">Visiting</span>` : '';
+      const availBtn = t.isVisiting
+        ? `<span style="cursor:pointer;font-size:12px;margin-left:2px" onclick="openAvailModal('${esc}')" title="Set available slots"><i class="ti ti-clock"></i></span>`
+        : '';
+      return `<span class="tag teacher-tag ${t.isVisiting?'visiting':''}">${t.name}${visitingPill}${availBtn} <span class="tag-x" onclick="removeItem('teacher','${esc}')">×</span></span>`;
+    }).join('');
+    return;
+  }
+  if (type === 'subject') {
+    S.subjects = S.subjects || [];
+    container.innerHTML = S.subjects.map(sub => {
+      return `<span class="tag subject-tag">${sub.name} <small style="opacity:.7">(${sub.hrsPerWeek}h/wk)</small> <span class="tag-x" onclick="removeItem('subject','${sub.name.replace(/'/g,"\\'")}')">×</span></span>`;
+    }).join('');
+    return;
+  }
+  const items = (S[type+'s'] || []);
   container.innerHTML = items.map(val => {
-    const suffix = type === 'subject' ? ` <small style="opacity:.7">(${S.subjects.find(s=>s.name===val).hrsPerWeek}h/wk)</small>` : '';
-    return `<span class="tag ${type}-tag">${val}${suffix} <span class="tag-x" onclick="removeItem('${type}','${val.replace(/'/g,"\\'")}')">×</span></span>`;
+    return `<span class="tag ${type}-tag">${val} <span class="tag-x" onclick="removeItem('${type}','${val.replace(/'/g,"\\'")}')">×</span></span>`;
   }).join('');
 }
 
 // ══════════════════════════════════════════
-//  ASSIGN
+//  VISITING FACULTY AVAILABILITY MODAL
 // ══════════════════════════════════════════
+let _availTeacher = null;
+let _tempAvail = {}; // day -> [slotId]
+
+function openAvailModal(name) {
+  const t = S.teachers.find(x => x.name === name);
+  if (!t) return;
+  _availTeacher = name;
+  _tempAvail = JSON.parse(JSON.stringify(t.availability || {}));
+  document.getElementById('avail-teacher-name').textContent = name;
+
+  const grid = document.getElementById('avail-grid');
+  const teachSlots = S.slots.filter(s => !s.isBreak);
+  grid.innerHTML = '';
+
+  S.days.forEach(day => {
+    const dayLabel = document.createElement('div');
+    dayLabel.style.cssText = 'grid-column:1/-1;font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em;padding:8px 0 4px';
+    dayLabel.textContent = day;
+    grid.appendChild(dayLabel);
+
+    teachSlots.forEach(slot => {
+      const selected = (_tempAvail[day] || []).includes(slot.id);
+      const div = document.createElement('div');
+      div.className = 'avail-slot' + (selected ? ' selected' : '');
+      div.dataset.day = day;
+      div.dataset.slotId = slot.id;
+      div.innerHTML = `<input type="checkbox" ${selected?'checked':''} style="accent-color:#6741d9"> <span>${slot.label} <small style="color:var(--text-muted)">${slot.start}</small></span>`;
+      div.addEventListener('click', () => {
+        const cb = div.querySelector('input');
+        cb.checked = !cb.checked;
+        div.classList.toggle('selected', cb.checked);
+        if (!_tempAvail[day]) _tempAvail[day] = [];
+        if (cb.checked) {
+          if (!_tempAvail[day].includes(slot.id)) _tempAvail[day].push(slot.id);
+        } else {
+          _tempAvail[day] = _tempAvail[day].filter(id => id !== slot.id);
+        }
+      });
+      grid.appendChild(div);
+    });
+  });
+
+  document.getElementById('avail-modal').classList.remove('hidden');
+}
+
+function closeAvailModal() {
+  document.getElementById('avail-modal').classList.add('hidden');
+  _availTeacher = null;
+}
+
+function saveAvailability() {
+  const t = S.teachers.find(x => x.name === _availTeacher);
+  if (t) {
+    t.availability = _tempAvail;
+    toast(`Availability saved for ${_availTeacher}`, 'ok');
+  }
+  closeAvailModal();
+}
+
+
 function renderAssignArea() {
   const area = document.getElementById('assign-area');
   if (!S.subjects.length || !S.teachers.length) {
@@ -770,31 +909,37 @@ function renderAssignArea() {
     return;
   }
   area.innerHTML = S.subjects.map(sub => {
-    const opts = S.teachers.map(t =>
-      `<option value="${t}" ${S.assignments[sub.name]===t?'selected':''}>${t}</option>`
-    ).join('');
+    const assigned = S.assignments[sub.name] || '';
+    const opts = S.teachers.map(t => {
+      const visitLabel = t.isVisiting ? ' 🔵 Visiting' : '';
+      return `<option value="${t.name}" ${assigned===t.name?'selected':''}>${t.name}${visitLabel}</option>`;
+    }).join('');
+    const assignedTeacher = S.teachers.find(t => t.name === assigned);
+    const assignedNote = assigned
+      ? `Assigned to <strong>${assigned}</strong>${assignedTeacher?.isVisiting?' <span style="color:#6741d9">(Visiting)</span>':''}`
+      : '<span style="color:var(--danger)">Not assigned</span>';
     return `<div class="assign-row">
       <div class="assign-label">
         <div class="name">${sub.name}</div>
-        <div class="sub">${sub.hrsPerWeek} hrs/week across all classes</div>
+        <div class="sub">${sub.hrsPerWeek} hrs/week &nbsp;·&nbsp; ${assignedNote}</div>
       </div>
-      <select onchange="S.assignments['${sub.name.replace(/'/g,"\\'")}'] = this.value">
+      <select onchange="S.assignments['${sub.name.replace(/'/g,"\\'")}'] = this.value; renderAssignArea()">
         <option value="">— select teacher —</option>
         ${opts}
       </select>
     </div>`;
-  }).join('');
+  }).join('')
+  + `<p class="text-muted" style="margin-top:12px"><i class="ti ti-info-circle"></i> One teacher can be assigned to multiple subjects. 🔵 = Visiting faculty with restricted availability.</p>`;
 }
 
 function autoAssign() {
   if (!S.subjects.length || !S.teachers.length) { toast('Add subjects and teachers first', 'error'); return; }
-  // Round-robin by teacher load
   const load = {};
-  S.teachers.forEach(t => load[t] = 0);
+  S.teachers.forEach(t => load[t.name] = 0);
   S.subjects.forEach(sub => {
-    const teacher = S.teachers.reduce((a,b) => load[a] <= load[b] ? a : b);
-    S.assignments[sub.name] = teacher;
-    load[teacher] += sub.hrsPerWeek;
+    const teacher = S.teachers.reduce((a,b) => load[a.name] <= load[b.name] ? a : b);
+    S.assignments[sub.name] = teacher.name;
+    load[teacher.name] += sub.hrsPerWeek;
   });
   renderAssignArea();
   toast('Auto-assigned evenly across teachers', 'ok');
@@ -816,16 +961,19 @@ function renderGenerate() {
   const totalHrs = S.subjects.reduce((a,b) => a+b.hrsPerWeek, 0);
   const unassigned = S.subjects.filter(s => !S.assignments[s.name]);
 
+  const visiting = S.teachers.filter(t => t.isVisiting);
+  const visitingNoAvail = visiting.filter(t => !Object.keys(t.availability||{}).length);
   const checks = [
     {ok: S.classes.length > 0, msg: S.classes.length ? `${S.classes.length} class(es) defined` : 'No classes defined'},
     {ok: S.subjects.length > 0, msg: S.subjects.length ? `${S.subjects.length} subject(s) defined` : 'No subjects defined'},
-    {ok: S.teachers.length > 0, msg: S.teachers.length ? `${S.teachers.length} teacher(s) defined` : 'No teachers defined'},
-    {ok: S.rooms.length > 0, msg: S.rooms.length ? `${S.rooms.length} room(s) defined` : 'No rooms / venues defined'},
-    {ok: unassigned.length === 0, msg: unassigned.length ? `Unassigned: ${unassigned.map(u=>u.name).join(', ')}` : 'All subjects assigned to teachers'},
+    {ok: S.teachers.length > 0, msg: S.teachers.length ? `${S.teachers.length} teacher(s) defined (${visiting.length} visiting)` : 'No teachers defined'},
+    {ok: true, msg: S.rooms.length ? `${S.rooms.length} room(s) defined` : 'No rooms defined — lectures will be scheduled without venues (optional)'},
+    {ok: unassigned.length === 0, msg: unassigned.length ? `Unassigned subjects: ${unassigned.map(u=>u.name).join(', ')}` : 'All subjects assigned to teachers'},
     {ok: totalHrs <= available, msg: totalHrs <= available ? `Hours OK: ${totalHrs} needed, ${available} slots available/class/week` : `Too many hours: ${totalHrs} needed but only ${available} slots available`},
+    ...(visitingNoAvail.length ? [{ok: false, msg: `Visiting faculty with no availability set: ${visitingNoAvail.map(t=>t.name).join(', ')} — click 🕐 on their tag to set slots`}] : []),
   ];
   document.getElementById('precheck-list').innerHTML = checks.map(c =>
-    `<div class="check-item ${c.ok?'ok':'fail'}"><i class="ti ti-${c.ok?'circle-check-filled':'circle-x-filled'}"></i>${c.msg}</div>`
+    `<div class="check-item ${c.ok?'ok':'fail'}"><i class="ti ti-${c.ok?'circle-check':'circle-x'}"></i>${c.msg}</div>`
   ).join('');
   const canGen = checks.every(c => c.ok);
   const btn = document.getElementById('gen-btn');
@@ -846,6 +994,7 @@ function generate() {
   const allowRepeat = document.getElementById('allow-repeat').value === 'yes';
   const compact = document.getElementById('compact').value === 'yes';
   const teachSlots = slots.filter(s => !s.isBreak);
+  const useRooms = rooms.length > 0;
 
   const tt = {};
   classes.forEach(cls => {
@@ -854,14 +1003,27 @@ function generate() {
   });
 
   const teacherBusy = {};
+  teachers.forEach(t => { teacherBusy[t.name] = {}; days.forEach(d => { teacherBusy[t.name][d] = {}; }); });
   const roomBusy = {};
-  teachers.forEach(t => { teacherBusy[t] = {}; days.forEach(d => { teacherBusy[t][d] = {}; }); });
   rooms.forEach(r => { roomBusy[r] = {}; days.forEach(d => { roomBusy[r][d] = {}; }); });
+
+  const teacherByName = {};
+  teachers.forEach(t => teacherByName[t.name] = t);
+
+  function slotAllowedForTeacher(tName, day, slotId) {
+    if (!tName) return true;
+    const t = teacherByName[tName];
+    if (!t || !t.isVisiting) return true;
+    const avail = t.availability || {};
+    const dayAvail = avail[day];
+    if (!dayAvail || dayAvail.length === 0) return false;
+    return dayAvail.includes(slotId);
+  }
 
   classes.forEach(cls => {
     const lectures = [];
     subjects.forEach(sub => {
-      for (let i = 0; i < sub.hrsPerWeek; i++) lectures.push({subject: sub.name, teacher: assignments[sub.name]});
+      for (let i = 0; i < sub.hrsPerWeek; i++) lectures.push({subject: sub.name, teacher: assignments[sub.name] || ''});
     });
     const shuffled = shuffle(lectures);
 
@@ -875,30 +1037,32 @@ function generate() {
           if (placed) break;
           const sid = slot.id;
           if (tt[cls][day][sid]) continue;
-          if (lec.teacher && teacherBusy[lec.teacher][day][sid]) continue;
+          if (lec.teacher && teacherBusy[lec.teacher]?.[day]?.[sid]) continue;
+          if (!slotAllowedForTeacher(lec.teacher, day, sid)) continue;
           if (!allowRepeat) {
             const dayVals = Object.values(tt[cls][day]);
             if (dayVals.some(v => v && v.subject === lec.subject)) continue;
           }
-          const availRooms = rooms.filter(r => !roomBusy[r][day][sid]);
-          if (!availRooms.length) continue;
-          const room = availRooms[0];
+          let room = '';
+          if (useRooms) {
+            const availRooms = rooms.filter(r => !roomBusy[r][day][sid]);
+            if (!availRooms.length) continue;
+            room = availRooms[0];
+            roomBusy[room][day][sid] = true;
+          }
           tt[cls][day][sid] = {subject: lec.subject, teacher: lec.teacher || '—', room};
           if (lec.teacher) teacherBusy[lec.teacher][day][sid] = true;
-          roomBusy[room][day][sid] = true;
           placed = true;
         }
       }
     });
 
-    // Compact: remove gaps between lectures
     if (compact) {
       days.forEach(day => {
         const filled = teachSlots.filter(s => tt[cls][day][s.id]).map(s => ({sid:s.id, data:tt[cls][day][s.id]}));
         teachSlots.forEach(s => delete tt[cls][day][s.id]);
         filled.forEach((f, i) => {
           if (teachSlots[i]) {
-            // Re-check teacher/room at new slot
             const ns = teachSlots[i];
             const d = f.data;
             if (d.teacher && d.teacher !== '—') teacherBusy[d.teacher][day][ns.id] = true;
@@ -929,7 +1093,7 @@ function renderView() {
   const viewBy = document.getElementById('view-by').value;
   const sel = document.getElementById('entity-select');
   document.getElementById('entity-label').textContent = viewBy === 'class' ? 'Class' : viewBy === 'teacher' ? 'Teacher' : 'Room';
-  const options = viewBy === 'class' ? S.classes : viewBy === 'teacher' ? S.teachers : S.rooms;
+  const options = viewBy === 'class' ? S.classes : viewBy === 'teacher' ? S.teachers.map(t => t.name) : S.rooms;
   const prev = sel.value;
   sel.innerHTML = options.map(o => `<option value="${o}">${o}</option>`).join('');
   if (prev && options.includes(prev)) sel.value = prev;
@@ -990,7 +1154,7 @@ function renderTimetable() {
             <div class="lec-subject">${entry.subject}</div>
             <div class="lec-meta">
               <span><i class="ti ti-user" style="font-size:10px"></i> ${entry.teacher}</span>
-              <span><i class="ti ti-building" style="font-size:10px"></i> ${entry.room} ${viewBy!=='class'?`· ${dispClass}`:''}</span>
+              <span><i class="ti ti-building" style="font-size:10px"></i> ${entry.room || '—'} ${viewBy!=='class'?`· ${dispClass}`:''}</span>
             </div>
           </div>
         </td>`;
@@ -1106,7 +1270,7 @@ function renderConflicts() {
   const conflicts = checkConflicts();
   const report = document.getElementById('conflict-report');
   if (!conflicts.length) {
-    report.innerHTML = '<div class="check-item ok"><i class="ti ti-shield-check-filled"></i> No conflicts detected — timetable is clean!</div>';
+    report.innerHTML = '<div class="check-item ok"><i class="ti ti-shield-check"></i> No conflicts detected — timetable is clean!</div>';
   } else {
     const icons = {teacher:'user-exclamation', room:'building-minus', gap:'arrows-split-2'};
     report.innerHTML = conflicts.map(c =>
@@ -1117,7 +1281,7 @@ function renderConflicts() {
   const load = document.getElementById('teacher-load');
   if (!S.teachers.length) { load.innerHTML = '<div class="empty-state"><i class="ti ti-users"></i>No teachers defined</div>'; return; }
   const counts = {};
-  S.teachers.forEach(t => counts[t] = 0);
+  S.teachers.forEach(t => counts[t.name] = 0);
   S.classes.forEach(cls => {
     S.days.forEach(day => {
       S.slots.filter(s => !s.isBreak).forEach(slot => {
@@ -1129,10 +1293,11 @@ function renderConflicts() {
   const max = Math.max(1, ...Object.values(counts));
   const barColors = ['#3b5bdb','#2f9e44','#e67700','#c2255c','#6741d9','#0c8599'];
   load.innerHTML = S.teachers.map((t, i) => {
-    const n = counts[t] || 0;
+    const n = counts[t.name] || 0;
     const pct = Math.round(n / max * 100);
+    const visitBadge = t.isVisiting ? `<span style="font-size:10px;background:#f3f0ff;color:#6741d9;border:1px solid #d0bfff;border-radius:10px;padding:1px 6px;margin-left:6px">Visiting</span>` : '';
     return `<div class="load-row">
-      <div class="load-label"><span><strong>${t}</strong></span><span style="color:var(--text-secondary)">${n} lectures/week</span></div>
+      <div class="load-label"><span><strong>${t.name}</strong>${visitBadge}</span><span style="color:var(--text-secondary)">${n} lectures/week</span></div>
       <div class="load-bar-bg"><div class="load-bar" style="width:${pct}%;background:${barColors[i%barColors.length]}"></div></div>
     </div>`;
   }).join('');
@@ -1164,6 +1329,10 @@ function handleFileLoad(e) {
   reader.onload = evt => {
     try {
       const data = JSON.parse(evt.target.result);
+      // Migrate old flat teacher array to objects if needed
+      if (data.teachers && typeof data.teachers[0] === 'string') {
+        data.teachers = data.teachers.map(name => ({name, isVisiting: false, availability: {}}));
+      }
       S = data;
       renderSlots();
       renderTags('class'); renderTags('room'); renderTags('subject'); renderTags('teacher');
@@ -1210,9 +1379,22 @@ function exportAll() {
     const saved = localStorage.getItem('timetable-manager-data');
     if (saved) {
       const data = JSON.parse(saved);
+      // Ensure all array fields exist
+      data.slots     = data.slots     || S.slots;
+      data.days      = data.days      || S.days;
+      data.classes   = data.classes   || [];
+      data.rooms     = data.rooms     || [];
+      data.subjects  = data.subjects  || [];
+      data.teachers  = data.teachers  || [];
+      data.assignments = data.assignments || {};
+      data.timetable = data.timetable || {};
+      // Migrate old flat teacher string array → objects
+      data.teachers = data.teachers.map(t =>
+        typeof t === 'string' ? {name: t, isVisiting: false, availability: {}} : t
+      );
       S = data;
     }
-  } catch(e) {}
+  } catch(e) { console.warn('Failed to restore saved data:', e); }
   renderSlots();
   renderTags('class'); renderTags('room'); renderTags('subject'); renderTags('teacher');
 })();
