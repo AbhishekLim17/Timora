@@ -361,7 +361,7 @@
     <div class="nav-tabs">
       <button class="nav-tab active" onclick="switchTab('setup')"><i class="ti ti-settings"></i> Setup</button>
       <button class="nav-tab" onclick="switchTab('assign')"><i class="ti ti-link"></i> Assign</button>
-      <button class="nav-tab" onclick="switchTab('generate')"><i class="ti ti-wand"></i> Generate</button>
+      <button class="nav-tab" onclick="switchTab('generate')"><i class="ti ti-sparkles"></i> Generate</button>
       <button class="nav-tab" onclick="switchTab('view')"><i class="ti ti-layout-grid"></i> Timetable</button>
       <button class="nav-tab" onclick="switchTab('conflicts')">
         <i class="ti ti-alert-triangle"></i> Conflicts
@@ -380,7 +380,7 @@
     <div class="mobile-menu">
       <button class="btn mobile-tab" onclick="switchTab('setup')"><i class="ti ti-settings"></i> Setup</button>
       <button class="btn mobile-tab" onclick="switchTab('assign')"><i class="ti ti-link"></i> Assign</button>
-      <button class="btn mobile-tab" onclick="switchTab('generate')"><i class="ti ti-wand"></i> Generate</button>
+      <button class="btn mobile-tab" onclick="switchTab('generate')"><i class="ti ti-sparkles"></i> Generate</button>
       <button class="btn mobile-tab" onclick="switchTab('view')"><i class="ti ti-layout-grid"></i> Timetable</button>
       <button class="btn mobile-tab" onclick="switchTab('conflicts')"><i class="ti ti-alert-triangle"></i> Conflicts</button>
     </div>
@@ -503,7 +503,7 @@
       <div class="card">
         <div class="card-header">
           <div class="card-title"><i class="ti ti-link"></i> Subject — Teacher Assignment</div>
-          <button class="btn sm" onclick="autoAssign()"><i class="ti ti-wand"></i> Auto-assign evenly</button>
+          <button class="btn sm" onclick="autoAssign()"><i class="ti ti-sparkles"></i> Auto-assign evenly</button>
         </div>
         <p class="text-muted" style="margin-bottom:14px">Assign each subject to the teacher who will teach it. Teachers with multiple subjects will be scheduled with equal distribution.</p>
         <div id="assign-area"></div>
@@ -553,7 +553,7 @@
       </div>
 
       <button class="btn success full" style="font-size:15px;padding:14px" onclick="generate()" id="gen-btn">
-        <i class="ti ti-wand"></i> Auto-generate Timetable
+        <i class="ti ti-sparkles"></i> Auto-generate Timetable
       </button>
     </div>
 
@@ -574,7 +574,7 @@
         </div>
         <div style="margin-left:auto;display:flex;gap:8px;align-items:flex-end">
           <button class="btn sm" onclick="window.print()"><i class="ti ti-printer"></i> Print</button>
-          <button class="btn sm primary" onclick="exportCSV()"><i class="ti ti-table-export"></i> Export CSV</button>
+          <button class="btn sm primary" onclick="exportCSV()"><i class="ti ti-file-export"></i> Export CSV</button>
         </div>
       </div>
       <div class="legend" id="legend" style="margin-bottom:12px"></div>
@@ -593,7 +593,7 @@
             <button class="btn sm" onclick="renderConflicts()"><i class="ti ti-refresh"></i> Refresh</button>
           </div>
           <div id="conflict-report">
-            <div class="empty-state"><i class="ti ti-shield-check"></i>Generate a timetable first</div>
+            <div class="empty-state"><i class="ti ti-shield-check-filled"></i>Generate a timetable first</div>
           </div>
         </div>
         <div class="card">
@@ -671,7 +671,7 @@ function switchTab(t) {
 // ══════════════════════════════════════════
 function toast(msg, type='') {
   const el = document.getElementById('toast');
-  el.innerHTML = `<i class="ti ti-${type==='error'?'alert-circle':type==='ok'?'circle-check':'info-circle'}"></i> ${msg}`;
+  el.innerHTML = `<i class="ti ti-${type==='error'?'circle-x-filled':type==='ok'?'circle-check-filled':'sparkles'}"></i> ${msg}`;
   el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), 2800);
 }
@@ -825,7 +825,7 @@ function renderGenerate() {
     {ok: totalHrs <= available, msg: totalHrs <= available ? `Hours OK: ${totalHrs} needed, ${available} slots available/class/week` : `Too many hours: ${totalHrs} needed but only ${available} slots available`},
   ];
   document.getElementById('precheck-list').innerHTML = checks.map(c =>
-    `<div class="check-item ${c.ok?'ok':'fail'}"><i class="ti ti-${c.ok?'circle-check':'circle-x'}"></i>${c.msg}</div>`
+    `<div class="check-item ${c.ok?'ok':'fail'}"><i class="ti ti-${c.ok?'circle-check-filled':'circle-x-filled'}"></i>${c.msg}</div>`
   ).join('');
   const canGen = checks.every(c => c.ok);
   const btn = document.getElementById('gen-btn');
@@ -1106,7 +1106,7 @@ function renderConflicts() {
   const conflicts = checkConflicts();
   const report = document.getElementById('conflict-report');
   if (!conflicts.length) {
-    report.innerHTML = '<div class="check-item ok"><i class="ti ti-shield-check"></i> No conflicts detected — timetable is clean!</div>';
+    report.innerHTML = '<div class="check-item ok"><i class="ti ti-shield-check-filled"></i> No conflicts detected — timetable is clean!</div>';
   } else {
     const icons = {teacher:'user-exclamation', room:'building-minus', gap:'arrows-split-2'};
     report.innerHTML = conflicts.map(c =>

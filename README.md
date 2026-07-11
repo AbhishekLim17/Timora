@@ -2,6 +2,8 @@
 
 Smart timetable scheduling made effortless.
 
+Live demo: https://timora-byabhi.vercel.app/
+
 Timora is a clean, single-file timetable manager for schools, colleges, and training programs. It helps you define classes, teachers, rooms, subjects, and time slots, then generate a timetable with conflict checks, drag-and-drop edits, and export options.
 
 ## Highlights
