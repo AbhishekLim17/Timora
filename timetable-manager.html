@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Timetable Manager</title>
+<title>Timora â€” Smart Timetable Scheduler</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 <style>
   :root {
@@ -32,7 +32,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
 
-  /* ── App shell ── */
+  /* â”€â”€ App shell â”€â”€ */
   .app-shell { display: flex; flex-direction: column; min-height: 100vh; }
   .navbar {
     background: var(--surface);
@@ -57,7 +57,7 @@
     font-size: 13px; font-weight: 500; transition: all .15s;
   }
   .nav-tab:hover { background: var(--surface2); color: var(--text); }
-  .nav-tab.active { background: var(--accent-light); color: var(--accent); }
+  .nav-tab.active, .mobile-tab.active { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
   .nav-tab .badge {
     background: var(--danger); color: #fff;
     border-radius: 10px; padding: 1px 6px; font-size: 11px; font-weight: 600;
@@ -65,12 +65,12 @@
   }
   .nav-actions { display: flex; gap: 8px; align-items: center; }
 
-  /* ── Main content ── */
+  /* â”€â”€ Main content â”€â”€ */
   .main { flex: 1; padding: 24px; max-width: 1200px; margin: 0 auto; width: 100%; }
   .panel { display: none; }
   .panel.active { display: block; }
 
-  /* ── Cards ── */
+  /* â”€â”€ Cards â”€â”€ */
   .card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -89,12 +89,12 @@
   }
   .card-title i { font-size: 15px; }
 
-  /* ── Grid layout ── */
+  /* â”€â”€ Grid layout â”€â”€ */
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
   .col { display: flex; flex-direction: column; gap: 16px; }
 
-  /* ── Form elements ── */
+  /* â”€â”€ Form elements â”€â”€ */
   label.field-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); display: block; margin-bottom: 5px; }
   input[type="text"], input[type="number"], input[type="time"], select, textarea {
     width: 100%; padding: 8px 11px;
@@ -115,7 +115,7 @@
   .input-row > * { flex: 1; }
   .input-row > .btn { flex: 0 0 auto; }
 
-  /* ── Buttons ── */
+  /* â”€â”€ Buttons â”€â”€ */
   .btn {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 8px 16px; border-radius: var(--radius);
@@ -139,7 +139,7 @@
   .btn.full { width: 100%; justify-content: center; }
   .btn:disabled { opacity: .45; cursor: not-allowed; }
 
-  /* ── Tags ── */
+  /* â”€â”€ Tags â”€â”€ */
   .tag-list { display: flex; flex-wrap: wrap; gap: 6px; min-height: 32px; margin-top: 10px; }
   .tag {
     display: inline-flex; align-items: center; gap: 5px;
@@ -156,7 +156,7 @@
   .tag-x { cursor: pointer; font-size: 13px; line-height: 1; opacity: .6; }
   .tag-x:hover { opacity: 1; }
 
-  /* ── Slots table ── */
+  /* â”€â”€ Slots table â”€â”€ */
   .table-wrap { overflow-x: auto; }
   table.data-table { width: 100%; border-collapse: collapse; }
   .data-table th {
@@ -170,7 +170,7 @@
   .data-table tr:last-child td { border-bottom: none; }
   .data-table input { padding: 5px 8px; }
 
-  /* ── Assign area ── */
+  /* â”€â”€ Assign area â”€â”€ */
   .assign-row {
     display: flex; align-items: center; gap: 12px;
     padding: 10px 14px;
@@ -184,7 +184,7 @@
   .assign-label .sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
   .assign-row select { width: 200px; flex: 0 0 200px; }
 
-  /* ── Stats bar ── */
+  /* â”€â”€ Stats bar â”€â”€ */
   .stats-bar { display: flex; gap: 12px; flex-wrap: wrap; }
   .stat-card {
     flex: 1; min-width: 90px;
@@ -196,7 +196,7 @@
   .stat-n { font-size: 24px; font-weight: 700; color: var(--accent); }
   .stat-l { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
-  /* ── Precheck ── */
+  /* â”€â”€ Precheck â”€â”€ */
   .check-item {
     display: flex; align-items: center; gap: 10px;
     padding: 8px 12px; border-radius: var(--radius);
@@ -206,7 +206,7 @@
   .check-item.fail { background: var(--danger-light); color: var(--danger); }
   .check-item i { font-size: 16px; flex-shrink: 0; }
 
-  /* ── Timetable grid ── */
+  /* â”€â”€ Timetable grid â”€â”€ */
   .tt-controls {
     display: flex; gap: 10px; align-items: center;
     flex-wrap: wrap; margin-bottom: 16px;
@@ -250,7 +250,7 @@
   .slot-label .slot-time { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
   .break-row td { background: #fffbe6 !important; text-align: center; font-size: 12px; color: var(--warning); font-style: italic; padding: 8px; }
 
-  /* ── Lecture cell ── */
+  /* â”€â”€ Lecture cell â”€â”€ */
   .lecture {
     border-radius: 6px;
     padding: 5px 7px;
@@ -280,12 +280,12 @@
   }
   .empty-cell:hover { opacity: .7; background: var(--accent-light); border-radius: 6px; }
 
-  /* ── Legend ── */
+  /* â”€â”€ Legend â”€â”€ */
   .legend { display: flex; flex-wrap: wrap; gap: 8px; }
   .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-secondary); }
   .legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
 
-  /* ── Conflict report ── */
+  /* â”€â”€ Conflict report â”€â”€ */
   .conflict-item {
     display: flex; align-items: flex-start; gap: 10px;
     padding: 10px 14px;
@@ -298,13 +298,13 @@
   .conflict-item.gap     { background: #f3f0ff; color: #6741d9; border: 1px solid #d0bfff; }
   .conflict-item i { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
 
-  /* ── Teacher load bar ── */
+  /* â”€â”€ Teacher load bar â”€â”€ */
   .load-row { margin-bottom: 14px; }
   .load-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px; }
   .load-bar-bg { background: var(--surface2); border-radius: 4px; height: 10px; overflow: hidden; border: 1px solid var(--border); }
   .load-bar { height: 100%; border-radius: 4px; transition: width .5s ease; }
 
-  /* ── Toast ── */
+  /* â”€â”€ Toast â”€â”€ */
   .toast {
     position: fixed; bottom: 24px; right: 24px;
     background: #1a1d2e; color: #fff;
@@ -319,7 +319,7 @@
   }
   .toast.show { opacity: 1; transform: translateY(0); }
 
-  /* ── Modal ── */
+  /* â”€â”€ Modal â”€â”€ */
   .modal-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,.45);
     z-index: 500; display: flex; align-items: center; justify-content: center;
@@ -343,7 +343,7 @@
   .avail-slot.selected { background: #f3f0ff; border-color: #d0bfff; color: #6741d9; font-weight: 500; }
   .avail-slot input[type=checkbox] { accent-color: #6741d9; }
 
-  /* ── Assign multi-select ── */
+  /* â”€â”€ Assign multi-select â”€â”€ */
   .multi-select-wrap { position: relative; }
   .multi-pills { display: flex; flex-wrap: wrap; gap: 4px; min-height: 36px; padding: 4px 8px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); cursor: pointer; align-items: center; }
   .multi-pill { background: var(--accent-light); color: var(--accent); border: 1px solid #bac8ff; border-radius: 20px; padding: 2px 8px; font-size: 11px; font-weight: 500; display: flex; align-items: center; gap: 4px; }
@@ -355,10 +355,10 @@
   .multi-opt:hover { background: var(--surface2); }
   .multi-opt.selected { color: var(--accent); font-weight: 500; }
 
-  /* ── Divider ── */
+  /* â”€â”€ Divider â”€â”€ */
   .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
 
-  /* ── Responsive ── */
+  /* â”€â”€ Responsive â”€â”€ */
   @media (max-width: 768px) {
     .grid-2, .grid-3 { grid-template-columns: 1fr; }
     .nav-tabs { display: none; }
@@ -368,15 +368,15 @@
   }
   @media (min-width: 769px) { .mobile-menu { display: none; } }
 
-  /* ── Print ── */
+  /* â”€â”€ Print â”€â”€ */
   @media print {
     .navbar, .tt-controls, .mobile-menu { display: none !important; }
     .panel { display: block !important; }
-    #tab-setup, #tab-generate, #tab-conflicts { display: none !important; }
+    #tab-setup, #tab-assign, #tab-generate, #tab-conflicts { display: none !important; }
     body { background: #fff; }
   }
 
-  /* ── Helpers ── */
+  /* â”€â”€ Helpers â”€â”€ */
   .mt-4 { margin-top: 16px; }
   .mt-2 { margin-top: 8px; }
   .flex-gap { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -393,7 +393,7 @@
   <nav class="navbar">
     <div class="navbar-brand">
       <i class="ti ti-calendar-event"></i>
-      Timetable <span>Manager</span>
+      Tim<span>ora</span>
     </div>
     <div class="nav-tabs">
       <button class="nav-tab active" onclick="switchTab('setup')"><i class="ti ti-settings"></i> Setup</button>
@@ -425,7 +425,7 @@
 
   <div class="main">
 
-    <!-- ══════════════ SETUP TAB ══════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• SETUP TAB â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <div class="panel active" id="tab-setup">
       <div class="grid-2">
         <div class="col">
@@ -448,15 +448,7 @@
           <!-- Working Days -->
           <div class="card">
             <div class="card-title" style="margin-bottom:14px"><i class="ti ti-calendar-week"></i> Working Days</div>
-            <div style="display:flex;flex-wrap:wrap;gap:12px" id="days-wrap">
-              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="checkbox" checked onchange="toggleDay('Mon')"> Monday</label>
-              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="checkbox" checked onchange="toggleDay('Tue')"> Tuesday</label>
-              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="checkbox" checked onchange="toggleDay('Wed')"> Wednesday</label>
-              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="checkbox" checked onchange="toggleDay('Thu')"> Thursday</label>
-              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="checkbox" checked onchange="toggleDay('Fri')"> Friday</label>
-              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="checkbox" onchange="toggleDay('Sat')"> Saturday</label>
-              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="checkbox" onchange="toggleDay('Sun')"> Sunday</label>
-            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:12px" id="days-wrap"></div>
           </div>
 
           <!-- Rooms -->
@@ -472,7 +464,7 @@
               </div>
             </div>
             <div class="tag-list" id="room-tags"></div>
-            <p class="text-muted" style="margin-top:8px">Leave empty to skip room assignment — lectures will be scheduled without a venue.</p>
+            <p class="text-muted" style="margin-top:8px">Leave empty to skip room assignment â€” lectures will be scheduled without a venue.</p>
           </div>
 
         </div>
@@ -540,11 +532,11 @@
       </div>
     </div>
 
-    <!-- ══════════════ ASSIGN TAB ══════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• ASSIGN TAB â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <div class="panel" id="tab-assign">
       <div class="card">
         <div class="card-header">
-          <div class="card-title"><i class="ti ti-link"></i> Subject — Teacher Assignment</div>
+          <div class="card-title"><i class="ti ti-link"></i> Subject â€” Teacher Assignment</div>
           <button class="btn sm" onclick="autoAssign()"><i class="ti ti-wand"></i> Auto-assign evenly</button>
         </div>
         <p class="text-muted" style="margin-bottom:14px">Assign each subject to the teacher who will teach it. Teachers with multiple subjects will be scheduled with equal distribution.</p>
@@ -557,7 +549,7 @@
       </div>
     </div>
 
-    <!-- ══════════════ GENERATE TAB ══════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• GENERATE TAB â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <div class="panel" id="tab-generate">
       <div class="grid-2" style="margin-bottom:16px">
         <div class="card">
@@ -570,15 +562,15 @@
             <div>
               <label class="field-label">Allow same subject back-to-back?</label>
               <select id="allow-repeat">
-                <option value="no">No — spread across days</option>
-                <option value="yes">Yes — consecutive allowed</option>
+                <option value="no">No â€” spread across days</option>
+                <option value="yes">Yes â€” consecutive allowed</option>
               </select>
             </div>
             <div>
               <label class="field-label">Compact schedule (no free periods for students)</label>
               <select id="compact">
-                <option value="yes">Yes — eliminate gaps</option>
-                <option value="no">No — allow gaps</option>
+                <option value="yes">Yes â€” eliminate gaps</option>
+                <option value="no">No â€” allow gaps</option>
               </select>
             </div>
           </div>
@@ -599,12 +591,12 @@
       </button>
     </div>
 
-    <!-- ══════════════ VIEW TAB ══════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• VIEW TAB â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <div class="panel" id="tab-view">
       <div class="tt-controls">
         <div style="display:flex;flex-direction:column;gap:4px">
           <label>View for</label>
-          <select id="view-by" onchange="renderTimetable()" style="min-width:120px">
+          <select id="view-by" onchange="renderView()" style="min-width:120px">
             <option value="class">Class</option>
             <option value="teacher">Teacher</option>
             <option value="room">Room</option>
@@ -623,10 +615,10 @@
       <div class="tt-wrap">
         <table class="tt" id="tt-table"></table>
       </div>
-      <p class="text-muted" style="margin-top:8px"><i class="ti ti-drag-drop"></i> Drag lectures to swap slots &nbsp;·&nbsp; Click × to delete &nbsp;·&nbsp; Click empty cell to add</p>
+      <p class="text-muted" style="margin-top:8px"><i class="ti ti-drag-drop"></i> Drag lectures to swap slots &nbsp;Â·&nbsp; Click Ã— to delete &nbsp;Â·&nbsp; Click empty cell to add</p>
     </div>
 
-    <!-- ══════════════ CONFLICTS TAB ══════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• CONFLICTS TAB â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <div class="panel" id="tab-conflicts">
       <div class="grid-2">
         <div class="card">
@@ -659,7 +651,7 @@
 <div class="modal-overlay hidden" id="avail-modal">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title"><i class="ti ti-clock" style="color:#6741d9"></i> Visiting Faculty — Available Slots</div>
+      <div class="modal-title"><i class="ti ti-clock" style="color:#6741d9"></i> Visiting Faculty â€” Available Slots</div>
       <button class="btn sm" onclick="closeAvailModal()"><i class="ti ti-x"></i></button>
     </div>
     <p class="text-muted" style="margin-bottom:4px">Select the time slots when <strong id="avail-teacher-name"></strong> is available to teach. The scheduler will only place their lectures in these slots.</p>
@@ -672,9 +664,13 @@
 </div>
 
 <script>
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  STATE
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function escAttr(str) {
+  return (str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+
 const COLORS = [
   {bg:'#e8ecff',color:'#3b5bdb',border:'#bac8ff'},
   {bg:'#ebfbee',color:'#2f9e44',border:'#b2f2bb'},
@@ -710,9 +706,9 @@ let S = {
 let slotCounter = 9;
 let dragSrc = null;
 
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  TABS
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function switchTab(t) {
   document.querySelectorAll('.nav-tab,.mobile-tab').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -724,9 +720,9 @@ function switchTab(t) {
   if (t === 'conflicts') renderConflicts();
 }
 
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  TOAST
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function toast(msg, type='') {
   const el = document.getElementById('toast');
   el.innerHTML = `<i class="ti ti-${type==='error'?'alert-circle':type==='ok'?'circle-check':'info-circle'}"></i> ${msg}`;
@@ -734,9 +730,9 @@ function toast(msg, type='') {
   setTimeout(() => el.classList.remove('show'), 2800);
 }
 
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  SLOTS
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function renderSlots() {
   const tbody = document.getElementById('slots-body');
   tbody.innerHTML = '';
@@ -744,11 +740,11 @@ function renderSlots() {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td style="color:var(--text-muted);font-size:12px;width:28px">${i+1}</td>
-      <td><input type="text" value="${s.label}" oninput="S.slots[${i}].label=this.value"></td>
-      <td><input type="time" value="${s.start}" oninput="S.slots[${i}].start=this.value" style="min-width:100px"></td>
-      <td><input type="time" value="${s.end}" oninput="S.slots[${i}].end=this.value" style="min-width:100px"></td>
-      <td style="text-align:center"><input type="checkbox" ${s.isBreak?'checked':''} onchange="S.slots[${i}].isBreak=this.checked"></td>
-      <td><button class="btn xs danger" onclick="S.slots.splice(${i},1);renderSlots()"><i class="ti ti-x"></i></button></td>
+      <td><input type="text" value="${escAttr(s.label)}" oninput="S.slots[${i}].label=this.value;autoSave()"></td>
+      <td><input type="time" value="${s.start}" oninput="S.slots[${i}].start=this.value;autoSave()" style="min-width:100px"></td>
+      <td><input type="time" value="${s.end}" oninput="S.slots[${i}].end=this.value;autoSave()" style="min-width:100px"></td>
+      <td style="text-align:center"><input type="checkbox" ${s.isBreak?'checked':''} onchange="S.slots[${i}].isBreak=this.checked;autoSave()"></td>
+      <td><button class="btn xs danger" onclick="S.slots.splice(${i},1);renderSlots();autoSave()"><i class="ti ti-x"></i></button></td>
     `;
     tbody.appendChild(tr);
   });
@@ -757,19 +753,31 @@ function renderSlots() {
 function addSlot() {
   S.slots.push({id:slotCounter++, label:'Period '+slotCounter, start:'14:00', end:'14:45', isBreak:false});
   renderSlots();
+  autoSave();
 }
 
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  DAYS
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function renderDays() {
+  const wrap = document.getElementById('days-wrap');
+  const allDays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const dayLabels = {Mon:'Monday', Tue:'Tuesday', Wed:'Wednesday', Thu:'Thursday', Fri:'Friday', Sat:'Saturday', Sun:'Sunday'};
+  wrap.innerHTML = allDays.map(d => {
+    const checked = S.days.includes(d) ? 'checked' : '';
+    return `<label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="checkbox" ${checked} onchange="toggleDay('${d}')"> ${dayLabels[d]}</label>`;
+  }).join('');
+}
+
 function toggleDay(d) {
   if (S.days.includes(d)) S.days = S.days.filter(x => x !== d);
   else S.days.push(d);
+  autoSave();
 }
 
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  TAG ITEMS
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function addItem(type) {
   const inp = document.getElementById(type + '-input');
   const val = inp.value.trim();
@@ -785,12 +793,14 @@ function addItem(type) {
     S.teachers.push({name: val, isVisiting, availability: {}});
     document.getElementById('teacher-visiting').checked = false;
   } else {
-    if (S[type+'s'].includes(val)) { toast(val + ' already exists', 'error'); return; }
-    S[type+'s'].push(val);
+    const key = type === 'class' ? 'classes' : type + 's';
+    if (S[key].includes(val)) { toast(val + ' already exists', 'error'); return; }
+    S[key].push(val);
   }
   inp.value = '';
   inp.focus();
   renderTags(type);
+  autoSave();
 }
 
 function removeItem(type, val) {
@@ -803,9 +813,11 @@ function removeItem(type, val) {
       if (S.assignments[sub] === val) delete S.assignments[sub];
     }
   } else {
-    S[type+'s'] = S[type+'s'].filter(x => x !== val);
+    const key = type === 'class' ? 'classes' : type + 's';
+    S[key] = S[key].filter(x => x !== val);
   }
   renderTags(type);
+  autoSave();
 }
 
 function renderTags(type) {
@@ -817,31 +829,34 @@ function renderTags(type) {
       typeof t === 'string' ? {name: t, isVisiting: false, availability: {}} : t
     );
     container.innerHTML = S.teachers.map(t => {
-      const esc = (t.name || '').replace(/'/g, "\\'");
+      const esc = escAttr(t.name);
       const visitingPill = t.isVisiting ? `<span class="visiting-pill">Visiting</span>` : '';
       const availBtn = t.isVisiting
         ? `<span style="cursor:pointer;font-size:12px;margin-left:2px" onclick="openAvailModal('${esc}')" title="Set available slots"><i class="ti ti-clock"></i></span>`
         : '';
-      return `<span class="tag teacher-tag ${t.isVisiting?'visiting':''}">${t.name}${visitingPill}${availBtn} <span class="tag-x" onclick="removeItem('teacher','${esc}')">×</span></span>`;
+      return `<span class="tag teacher-tag ${t.isVisiting?'visiting':''}">${t.name}${visitingPill}${availBtn} <span class="tag-x" onclick="removeItem('teacher','${esc}')">Ã—</span></span>`;
     }).join('');
     return;
   }
   if (type === 'subject') {
     S.subjects = S.subjects || [];
     container.innerHTML = S.subjects.map(sub => {
-      return `<span class="tag subject-tag">${sub.name} <small style="opacity:.7">(${sub.hrsPerWeek}h/wk)</small> <span class="tag-x" onclick="removeItem('subject','${sub.name.replace(/'/g,"\\'")}')">×</span></span>`;
+      const esc = escAttr(sub.name);
+      return `<span class="tag subject-tag">${sub.name} <small style="opacity:.7">(${sub.hrsPerWeek}h/wk)</small> <span class="tag-x" onclick="removeItem('subject','${esc}')">Ã—</span></span>`;
     }).join('');
     return;
   }
-  const items = (S[type+'s'] || []);
+  const key = type === 'class' ? 'classes' : type + 's';
+  const items = (S[key] || []);
   container.innerHTML = items.map(val => {
-    return `<span class="tag ${type}-tag">${val} <span class="tag-x" onclick="removeItem('${type}','${val.replace(/'/g,"\\'")}')">×</span></span>`;
+    const esc = escAttr(val);
+    return `<span class="tag ${type}-tag">${val} <span class="tag-x" onclick="removeItem('${type}','${esc}')">Ã—</span></span>`;
   }).join('');
 }
 
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  VISITING FACULTY AVAILABILITY MODAL
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 let _availTeacher = null;
 let _tempAvail = {}; // day -> [slotId]
 
@@ -869,9 +884,11 @@ function openAvailModal(name) {
       div.dataset.day = day;
       div.dataset.slotId = slot.id;
       div.innerHTML = `<input type="checkbox" ${selected?'checked':''} style="accent-color:#6741d9"> <span>${slot.label} <small style="color:var(--text-muted)">${slot.start}</small></span>`;
-      div.addEventListener('click', () => {
+      div.addEventListener('click', (e) => {
         const cb = div.querySelector('input');
-        cb.checked = !cb.checked;
+        if (e.target !== cb) {
+          cb.checked = !cb.checked;
+        }
         div.classList.toggle('selected', cb.checked);
         if (!_tempAvail[day]) _tempAvail[day] = [];
         if (cb.checked) {
@@ -897,6 +914,7 @@ function saveAvailability() {
   if (t) {
     t.availability = _tempAvail;
     toast(`Availability saved for ${_availTeacher}`, 'ok');
+    autoSave();
   }
   closeAvailModal();
 }
@@ -911,25 +929,26 @@ function renderAssignArea() {
   area.innerHTML = S.subjects.map(sub => {
     const assigned = S.assignments[sub.name] || '';
     const opts = S.teachers.map(t => {
-      const visitLabel = t.isVisiting ? ' 🔵 Visiting' : '';
-      return `<option value="${t.name}" ${assigned===t.name?'selected':''}>${t.name}${visitLabel}</option>`;
+      const visitLabel = t.isVisiting ? ' ðŸ”µ Visiting' : '';
+      return `<option value="${escAttr(t.name)}" ${assigned===t.name?'selected':''}>${t.name}${visitLabel}</option>`;
     }).join('');
     const assignedTeacher = S.teachers.find(t => t.name === assigned);
     const assignedNote = assigned
       ? `Assigned to <strong>${assigned}</strong>${assignedTeacher?.isVisiting?' <span style="color:#6741d9">(Visiting)</span>':''}`
       : '<span style="color:var(--danger)">Not assigned</span>';
+    const escSub = escAttr(sub.name);
     return `<div class="assign-row">
       <div class="assign-label">
         <div class="name">${sub.name}</div>
-        <div class="sub">${sub.hrsPerWeek} hrs/week &nbsp;·&nbsp; ${assignedNote}</div>
+        <div class="sub">${sub.hrsPerWeek} hrs/week &nbsp;Â·&nbsp; ${assignedNote}</div>
       </div>
-      <select onchange="S.assignments['${sub.name.replace(/'/g,"\\'")}'] = this.value; renderAssignArea()">
-        <option value="">— select teacher —</option>
+      <select onchange="S.assignments['${escSub}'] = this.value; autoSave(); renderAssignArea()">
+        <option value="">â€” select teacher â€”</option>
         ${opts}
       </select>
     </div>`;
   }).join('')
-  + `<p class="text-muted" style="margin-top:12px"><i class="ti ti-info-circle"></i> One teacher can be assigned to multiple subjects. 🔵 = Visiting faculty with restricted availability.</p>`;
+  + `<p class="text-muted" style="margin-top:12px"><i class="ti ti-info-circle"></i> One teacher can be assigned to multiple subjects. ðŸ”µ = Visiting faculty with restricted availability.</p>`;
 }
 
 function autoAssign() {
@@ -942,12 +961,13 @@ function autoAssign() {
     load[teacher.name] += sub.hrsPerWeek;
   });
   renderAssignArea();
+  autoSave();
   toast('Auto-assigned evenly across teachers', 'ok');
 }
 
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  GENERATE
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function renderGenerate() {
   document.getElementById('summary-stats').innerHTML = `
     <div class="stat-card"><div class="stat-n">${S.classes.length}</div><div class="stat-l">Classes</div></div>
@@ -967,10 +987,10 @@ function renderGenerate() {
     {ok: S.classes.length > 0, msg: S.classes.length ? `${S.classes.length} class(es) defined` : 'No classes defined'},
     {ok: S.subjects.length > 0, msg: S.subjects.length ? `${S.subjects.length} subject(s) defined` : 'No subjects defined'},
     {ok: S.teachers.length > 0, msg: S.teachers.length ? `${S.teachers.length} teacher(s) defined (${visiting.length} visiting)` : 'No teachers defined'},
-    {ok: true, msg: S.rooms.length ? `${S.rooms.length} room(s) defined` : 'No rooms defined — lectures will be scheduled without venues (optional)'},
+    {ok: true, msg: S.rooms.length ? `${S.rooms.length} room(s) defined` : 'No rooms defined â€” lectures will be scheduled without venues (optional)'},
     {ok: unassigned.length === 0, msg: unassigned.length ? `Unassigned subjects: ${unassigned.map(u=>u.name).join(', ')}` : 'All subjects assigned to teachers'},
     {ok: totalHrs <= available, msg: totalHrs <= available ? `Hours OK: ${totalHrs} needed, ${available} slots available/class/week` : `Too many hours: ${totalHrs} needed but only ${available} slots available`},
-    ...(visitingNoAvail.length ? [{ok: false, msg: `Visiting faculty with no availability set: ${visitingNoAvail.map(t=>t.name).join(', ')} — click 🕐 on their tag to set slots`}] : []),
+    ...(visitingNoAvail.length ? [{ok: false, msg: `Visiting faculty with no availability set: ${visitingNoAvail.map(t=>t.name).join(', ')} â€” click ðŸ• on their tag to set slots`}] : []),
   ];
   document.getElementById('precheck-list').innerHTML = checks.map(c =>
     `<div class="check-item ${c.ok?'ok':'fail'}"><i class="ti ti-${c.ok?'circle-check':'circle-x'}"></i>${c.msg}</div>`
@@ -1020,25 +1040,146 @@ function generate() {
     return dayAvail.includes(slotId);
   }
 
+  // 1. Gather all lectures to schedule
+  const allLectures = [];
   classes.forEach(cls => {
-    const lectures = [];
     subjects.forEach(sub => {
-      for (let i = 0; i < sub.hrsPerWeek; i++) lectures.push({subject: sub.name, teacher: assignments[sub.name] || ''});
+      const teacher = assignments[sub.name] || '';
+      for (let i = 0; i < sub.hrsPerWeek; i++) {
+        allLectures.push({
+          class: cls,
+          subject: sub.name,
+          teacher: teacher
+        });
+      }
     });
-    const shuffled = shuffle(lectures);
+  });
 
-    shuffled.forEach(lec => {
+  // 2. Sort lectures using Minimum Remaining Values (MRV) heuristic
+  const teacherAvailCount = {};
+  const teacherTotalHrs = {};
+
+  teachers.forEach(t => {
+    if (t.isVisiting) {
+      let count = 0;
+      const avail = t.availability || {};
+      Object.keys(avail).forEach(d => {
+        count += (avail[d] || []).length;
+      });
+      teacherAvailCount[t.name] = count || 1;
+    } else {
+      teacherAvailCount[t.name] = teachSlots.length * days.length;
+    }
+
+    let hrs = 0;
+    subjects.forEach(sub => {
+      if (assignments[sub.name] === t.name) {
+        hrs += sub.hrsPerWeek;
+      }
+    });
+    teacherTotalHrs[t.name] = hrs;
+  });
+
+  allLectures.sort((a, b) => {
+    const availA = a.teacher ? (teacherAvailCount[a.teacher] || 999) : 999;
+    const availB = b.teacher ? (teacherAvailCount[b.teacher] || 999) : 999;
+    if (availA !== availB) return availA - availB;
+
+    const hrsA = a.teacher ? (teacherTotalHrs[a.teacher] || 0) : 0;
+    const hrsB = b.teacher ? (teacherTotalHrs[b.teacher] || 0) : 0;
+    if (hrsA !== hrsB) return hrsB - hrsA;
+
+    return Math.random() - 0.5;
+  });
+
+  // 3. Backtracking Solver with chronological/shuffled slot search
+  let steps = 0;
+  const maxSteps = 50000;
+
+  function solve(index) {
+    steps++;
+    if (steps > maxSteps) return false;
+    if (index === allLectures.length) return true;
+
+    const lec = allLectures[index];
+    const cls = lec.class;
+    const teacher = lec.teacher;
+
+    const tryDays = shuffle([...days]);
+
+    for (const day of tryDays) {
+      let targetSlots = [];
+      if (compact) {
+        let firstEmpty = null;
+        for (const s of teachSlots) {
+          if (!tt[cls][day][s.id]) {
+            firstEmpty = s;
+            break;
+          }
+        }
+        if (firstEmpty) targetSlots = [firstEmpty];
+      } else {
+        targetSlots = shuffle([...teachSlots]);
+      }
+
+      for (const slot of targetSlots) {
+        const sid = slot.id;
+
+        if (tt[cls][day][sid]) continue;
+        if (teacher && teacherBusy[teacher]?.[day]?.[sid]) continue;
+        if (!slotAllowedForTeacher(teacher, day, sid)) continue;
+
+        if (!allowRepeat) {
+          const dayVals = Object.values(tt[cls][day]);
+          if (dayVals.some(v => v && v.subject === lec.subject)) continue;
+        }
+
+        let room = '';
+        if (useRooms) {
+          const availRooms = rooms.filter(r => !roomBusy[r][day][sid]);
+          if (!availRooms.length) continue;
+          room = availRooms[0];
+        }
+
+        // Place
+        tt[cls][day][sid] = {subject: lec.subject, teacher: teacher || 'â€”', room};
+        if (teacher) teacherBusy[teacher][day][sid] = true;
+        if (room) roomBusy[room][day][sid] = true;
+
+        if (solve(index + 1)) return true;
+
+        // Backtrack
+        delete tt[cls][day][sid];
+        if (teacher) delete teacherBusy[teacher][day][sid];
+        if (room) delete roomBusy[room][day][sid];
+      }
+    }
+    return false;
+  }
+
+  const solved = solve(0);
+
+  if (!solved) {
+    // Greedy fallback
+    classes.forEach(c => days.forEach(d => { tt[c][d] = {}; }));
+    teachers.forEach(t => days.forEach(d => { teacherBusy[t.name][d] = {}; }));
+    rooms.forEach(r => days.forEach(d => { roomBusy[r][d] = {}; }));
+
+    allLectures.forEach(lec => {
+      const cls = lec.class;
+      const teacher = lec.teacher;
       let placed = false;
+
       const tryDays = shuffle([...days]);
+      const trySlots = compact ? [...teachSlots] : shuffle([...teachSlots]);
+
       for (const day of tryDays) {
         if (placed) break;
-        const trySlots = shuffle([...teachSlots]);
         for (const slot of trySlots) {
-          if (placed) break;
           const sid = slot.id;
           if (tt[cls][day][sid]) continue;
-          if (lec.teacher && teacherBusy[lec.teacher]?.[day]?.[sid]) continue;
-          if (!slotAllowedForTeacher(lec.teacher, day, sid)) continue;
+          if (teacher && teacherBusy[teacher]?.[day]?.[sid]) continue;
+          if (!slotAllowedForTeacher(teacher, day, sid)) continue;
           if (!allowRepeat) {
             const dayVals = Object.values(tt[cls][day]);
             if (dayVals.some(v => v && v.subject === lec.subject)) continue;
@@ -1050,40 +1191,108 @@ function generate() {
             room = availRooms[0];
             roomBusy[room][day][sid] = true;
           }
-          tt[cls][day][sid] = {subject: lec.subject, teacher: lec.teacher || '—', room};
-          if (lec.teacher) teacherBusy[lec.teacher][day][sid] = true;
+          tt[cls][day][sid] = {subject: lec.subject, teacher: teacher || 'â€”', room};
+          if (teacher) teacherBusy[teacher][day][sid] = true;
           placed = true;
+          break;
         }
       }
-    });
 
-    if (compact) {
+      if (!placed) {
+        for (const day of tryDays) {
+          if (placed) break;
+          for (const slot of trySlots) {
+            const sid = slot.id;
+            if (tt[cls][day][sid]) continue;
+            let room = '';
+            if (useRooms) {
+              const availRooms = rooms.filter(r => !roomBusy[r][day][sid]);
+              room = availRooms.length ? availRooms[0] : rooms[0];
+              if (room) roomBusy[room][day][sid] = true;
+            }
+            tt[cls][day][sid] = {subject: lec.subject, teacher: teacher || 'â€”', room};
+            if (teacher) teacherBusy[teacher][day][sid] = true;
+            placed = true;
+            break;
+          }
+        }
+      }
+
+      if (!placed) {
+        const day = days[0];
+        const sid = teachSlots[0].id;
+        let room = rooms[0] || '';
+        tt[cls][day][sid] = {subject: lec.subject, teacher: teacher || 'â€”', room};
+      }
+    });
+  }
+
+  // Only run post-hoc compaction if compact is enabled AND we did not solve it using backtracking
+  if (compact && !solved) {
+    classes.forEach(cls => {
       days.forEach(day => {
-        const filled = teachSlots.filter(s => tt[cls][day][s.id]).map(s => ({sid:s.id, data:tt[cls][day][s.id]}));
-        teachSlots.forEach(s => delete tt[cls][day][s.id]);
-        filled.forEach((f, i) => {
-          if (teachSlots[i]) {
-            const ns = teachSlots[i];
-            const d = f.data;
-            if (d.teacher && d.teacher !== '—') teacherBusy[d.teacher][day][ns.id] = true;
-            if (d.room) roomBusy[d.room][day][ns.id] = true;
-            tt[cls][day][ns.id] = d;
+        const filled = [];
+        teachSlots.forEach(s => {
+          const entry = tt[cls][day][s.id];
+          if (entry) {
+            filled.push({ oldSlotId: s.id, data: entry });
+            if (entry.teacher && entry.teacher !== 'â€”' && teacherBusy[entry.teacher]?.[day]) {
+              delete teacherBusy[entry.teacher][day][s.id];
+            }
+            if (entry.room && roomBusy[entry.room]?.[day]) {
+              delete roomBusy[entry.room][day][s.id];
+            }
+            delete tt[cls][day][s.id];
+          }
+        });
+
+        let targetIndex = 0;
+        filled.forEach((f) => {
+          const d = f.data;
+          let foundSlot = null;
+          for (let j = targetIndex; j < teachSlots.length; j++) {
+            const ns = teachSlots[j];
+            if (d.teacher && d.teacher !== 'â€”' && teacherBusy[d.teacher]?.[day]?.[ns.id]) continue;
+            if (d.room && roomBusy[d.room]?.[day]?.[ns.id]) continue;
+            if (!slotAllowedForTeacher(d.teacher, day, ns.id)) continue;
+
+            foundSlot = ns;
+            targetIndex = j + 1;
+            break;
+          }
+
+          if (foundSlot) {
+            if (d.teacher && d.teacher !== 'â€”' && teacherBusy[d.teacher]?.[day]) {
+              teacherBusy[d.teacher][day][foundSlot.id] = true;
+            }
+            if (d.room && roomBusy[d.room]?.[day]) {
+              roomBusy[d.room][day][foundSlot.id] = true;
+            }
+            tt[cls][day][foundSlot.id] = d;
+          } else {
+            if (d.teacher && d.teacher !== 'â€”' && teacherBusy[d.teacher]?.[day]) {
+              teacherBusy[d.teacher][day][f.oldSlotId] = true;
+            }
+            if (d.room && roomBusy[d.room]?.[day]) {
+              roomBusy[d.room][day][f.oldSlotId] = true;
+            }
+            tt[cls][day][f.oldSlotId] = d;
           }
         });
       });
-    }
-  });
-
+    });
+  }
   S.timetable = tt;
   renderView();
   checkConflicts();
   switchTab('view');
+  autoSave();
   toast('Timetable generated successfully!', 'ok');
 }
 
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  VIEW
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function getColor(subject) {
   const idx = S.subjects.findIndex(s => s.name === subject);
   return COLORS[((idx % COLORS.length) + COLORS.length) % COLORS.length];
@@ -1095,7 +1304,7 @@ function renderView() {
   document.getElementById('entity-label').textContent = viewBy === 'class' ? 'Class' : viewBy === 'teacher' ? 'Teacher' : 'Room';
   const options = viewBy === 'class' ? S.classes : viewBy === 'teacher' ? S.teachers.map(t => t.name) : S.rooms;
   const prev = sel.value;
-  sel.innerHTML = options.map(o => `<option value="${o}">${o}</option>`).join('');
+  sel.innerHTML = options.map(o => `<option value="${escAttr(o)}">${o}</option>`).join('');
   if (prev && options.includes(prev)) sel.value = prev;
   renderTimetable();
 }
@@ -1117,12 +1326,12 @@ function renderTimetable() {
 
   slots.forEach(slot => {
     if (slot.isBreak) {
-      html += `<tr class="break-row"><td class="slot-label"><div class="slot-name">${slot.label}</div><div class="slot-time">${slot.start}–${slot.end}</div></td>`;
-      html += `<td colspan="${days.length}">— ${slot.label} —</td></tr>`;
+      html += `<tr class="break-row"><td class="slot-label"><div class="slot-name">${slot.label}</div><div class="slot-time">${slot.start}â€“${slot.end}</div></td>`;
+      html += `<td colspan="${days.length}">â€” ${slot.label} â€”</td></tr>`;
       return;
     }
     html += `<tr>`;
-    html += `<td class="slot-label"><div class="slot-name">${slot.label}</div><div class="slot-time">${slot.start}–${slot.end}</div></td>`;
+    html += `<td class="slot-label"><div class="slot-name">${slot.label}</div><div class="slot-time">${slot.start}â€“${slot.end}</div></td>`;
 
     days.forEach(day => {
       // Get entry based on viewBy
@@ -1146,22 +1355,26 @@ function renderTimetable() {
       if (entry) {
         const c = getColor(entry.subject);
         const clsForDrop = viewBy === 'class' ? entity : (entry.cls || entity);
-        html += `<td ondragover="event.preventDefault()" ondrop="dropLecture(event,'${clsForDrop}','${day}',${slot.id})">
+        const escCls = escAttr(clsForDrop);
+        const escDay = escAttr(day);
+        html += `<td ondragover="event.preventDefault()" ondrop="dropLecture(event,'${escCls}','${escDay}',${slot.id})">
           <div class="lecture" draggable="true"
-            ondragstart="dragLecture(event,'${clsForDrop}','${day}',${slot.id})"
+            ondragstart="dragLecture(event,'${escCls}','${escDay}',${slot.id})"
             style="background:${c.bg};color:${c.color};border-color:${c.border}">
-            <span class="lec-del" onclick="removeLecture('${clsForDrop}','${day}',${slot.id})">×</span>
+            <span class="lec-del" onclick="removeLecture('${escCls}','${escDay}',${slot.id})">Ã—</span>
             <div class="lec-subject">${entry.subject}</div>
             <div class="lec-meta">
               <span><i class="ti ti-user" style="font-size:10px"></i> ${entry.teacher}</span>
-              <span><i class="ti ti-building" style="font-size:10px"></i> ${entry.room || '—'} ${viewBy!=='class'?`· ${dispClass}`:''}</span>
+              <span><i class="ti ti-building" style="font-size:10px"></i> ${entry.room || 'â€”'} ${viewBy!=='class'?`Â· ${dispClass}`:''}</span>
             </div>
           </div>
         </td>`;
       } else {
         const clsForAdd = viewBy === 'class' ? entity : '';
-        html += `<td ondragover="event.preventDefault()" ondrop="dropLecture(event,'${clsForAdd||classes[0]}','${day}',${slot.id})">
-          <div class="empty-cell" onclick="addLecturePrompt('${clsForAdd||classes[0]}','${day}',${slot.id})">+</div>
+        const escCls = escAttr(clsForAdd || classes[0]);
+        const escDay = escAttr(day);
+        html += `<td ondragover="event.preventDefault()" ondrop="dropLecture(event,'${escCls}','${escDay}',${slot.id})">
+          <div class="empty-cell" onclick="addLecturePrompt('${escCls}','${escDay}',${slot.id})">+</div>
         </td>`;
       }
     });
@@ -1178,7 +1391,7 @@ function renderTimetable() {
   }).join('');
 }
 
-// ── Drag & Drop ──
+// â”€â”€ Drag & Drop â”€â”€
 function dragLecture(e, cls, day, slotId) {
   dragSrc = {cls, day, slotId};
   e.dataTransfer.effectAllowed = 'move';
@@ -1188,17 +1401,24 @@ function dropLecture(e, cls, day, slotId) {
   e.preventDefault();
   if (!dragSrc) return;
   const src = dragSrc;
-  if (src.cls === cls && src.day === day && src.slotId === slotId) { dragSrc = null; return; }
+
+  // Use the source class if the destination class is a default/placeholder,
+  // keeping the lecture in the same class when dragging in Room/Teacher views.
+  const targetCls = (cls === S.classes[0] && src.cls !== cls) ? src.cls : cls;
+
+  if (src.cls === targetCls && src.day === day && src.slotId === slotId) { dragSrc = null; return; }
   const srcEntry = S.timetable[src.cls]?.[src.day]?.[src.slotId];
-  const dstEntry = S.timetable[cls]?.[day]?.[slotId];
-  if (!S.timetable[cls]) S.timetable[cls] = {};
-  if (!S.timetable[cls][day]) S.timetable[cls][day] = {};
-  S.timetable[cls][day][slotId] = srcEntry;
+  const dstEntry = S.timetable[targetCls]?.[day]?.[slotId];
+  if (!S.timetable[targetCls]) S.timetable[targetCls] = {};
+  if (!S.timetable[targetCls][day]) S.timetable[targetCls][day] = {};
+
+  S.timetable[targetCls][day][slotId] = srcEntry;
   if (dstEntry) S.timetable[src.cls][src.day][src.slotId] = dstEntry;
   else delete S.timetable[src.cls][src.day][src.slotId];
   dragSrc = null;
   renderTimetable();
   checkConflicts();
+  autoSave();
   toast('Lecture moved');
 }
 
@@ -1206,24 +1426,37 @@ function removeLecture(cls, day, slotId) {
   if (S.timetable[cls]?.[day]) delete S.timetable[cls][day][slotId];
   renderTimetable();
   checkConflicts();
+  autoSave();
 }
 
 function addLecturePrompt(cls, day, slotId) {
   if (!S.subjects.length) { toast('No subjects defined', 'error'); return; }
   const sub = prompt('Subject:\n' + S.subjects.map(s=>s.name).join(', '));
   if (!sub || !S.subjects.find(s=>s.name===sub)) return;
-  const teacher = S.assignments[sub] || (S.teachers[0] || '—');
-  const room = S.rooms[0] || 'TBD';
+
+  const viewBy = document.getElementById('view-by').value;
+  const entity = document.getElementById('entity-select').value;
+
+  let teacher = S.assignments[sub] || (S.teachers[0]?.name || 'â€”');
+  let room = S.rooms[0] || 'TBD';
+
+  if (viewBy === 'teacher' && entity) {
+    teacher = entity;
+  } else if (viewBy === 'room' && entity) {
+    room = entity;
+  }
+
   if (!S.timetable[cls]) S.timetable[cls] = {};
   if (!S.timetable[cls][day]) S.timetable[cls][day] = {};
   S.timetable[cls][day][slotId] = {subject: sub, teacher, room};
   renderTimetable();
   checkConflicts();
+  autoSave();
 }
 
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  CONFLICTS
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function checkConflicts() {
   const {timetable, days, slots, classes} = S;
   const conflicts = [];
@@ -1235,12 +1468,12 @@ function checkConflicts() {
       classes.forEach(cls => {
         const e = timetable[cls]?.[day]?.[slot.id];
         if (!e) return;
-        if (e.teacher && e.teacher !== '—') {
-          if (teacherMap[e.teacher]) conflicts.push({type:'teacher', msg:`${e.teacher} is double-booked on ${day} – ${slot.label} (${cls} & ${teacherMap[e.teacher]})`});
+        if (e.teacher && e.teacher !== 'â€”') {
+          if (teacherMap[e.teacher]) conflicts.push({type:'teacher', msg:`${e.teacher} is double-booked on ${day} â€“ ${slot.label} (${cls} & ${teacherMap[e.teacher]})`});
           else teacherMap[e.teacher] = cls;
         }
         if (e.room) {
-          if (roomMap[e.room]) conflicts.push({type:'room', msg:`${e.room} is double-booked on ${day} – ${slot.label} (${cls} & ${roomMap[e.room]})`});
+          if (roomMap[e.room]) conflicts.push({type:'room', msg:`${e.room} is double-booked on ${day} â€“ ${slot.label} (${cls} & ${roomMap[e.room]})`});
           else roomMap[e.room] = cls;
         }
       });
@@ -1254,7 +1487,7 @@ function checkConflicts() {
       const last = arr.lastIndexOf(true);
       if (first >= 0 && last >= 0) {
         for (let i = first; i <= last; i++) {
-          if (!arr[i]) conflicts.push({type:'gap', msg:`Free period gap for ${cls} on ${day} – slot ${i+1} is empty between lectures`});
+          if (!arr[i]) conflicts.push({type:'gap', msg:`Free period gap for ${cls} on ${day} â€“ slot "${teachSlots[i].label}" is empty between lectures`});
         }
       }
     });
@@ -1270,7 +1503,7 @@ function renderConflicts() {
   const conflicts = checkConflicts();
   const report = document.getElementById('conflict-report');
   if (!conflicts.length) {
-    report.innerHTML = '<div class="check-item ok"><i class="ti ti-shield-check"></i> No conflicts detected — timetable is clean!</div>';
+    report.innerHTML = '<div class="check-item ok"><i class="ti ti-shield-check"></i> No conflicts detected â€” timetable is clean!</div>';
   } else {
     const icons = {teacher:'user-exclamation', room:'building-minus', gap:'arrows-split-2'};
     report.innerHTML = conflicts.map(c =>
@@ -1286,7 +1519,7 @@ function renderConflicts() {
     S.days.forEach(day => {
       S.slots.filter(s => !s.isBreak).forEach(slot => {
         const e = S.timetable[cls]?.[day]?.[slot.id];
-        if (e?.teacher && e.teacher !== '—') counts[e.teacher] = (counts[e.teacher]||0)+1;
+        if (e?.teacher && e.teacher !== 'â€”') counts[e.teacher] = (counts[e.teacher]||0)+1;
       });
     });
   });
@@ -1303,9 +1536,15 @@ function renderConflicts() {
   }).join('');
 }
 
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  SAVE / LOAD / EXPORT
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function autoSave() {
+  try {
+    localStorage.setItem('timetable-manager-data', JSON.stringify(S));
+  } catch(e) { console.warn('Failed to auto-save:', e); }
+}
+
 function saveData() {
   const json = JSON.stringify(S, null, 2);
   localStorage.setItem('timetable-manager-data', json);
@@ -1329,13 +1568,39 @@ function handleFileLoad(e) {
   reader.onload = evt => {
     try {
       const data = JSON.parse(evt.target.result);
+
+      // Ensure all array fields exist
+      data.slots       = data.slots       || S.slots;
+      data.days        = data.days        || S.days;
+      data.classes     = data.classes     || [];
+      data.rooms       = data.rooms       || [];
+      data.subjects    = data.subjects    || [];
+      data.teachers    = data.teachers    || [];
+      data.assignments = data.assignments || {};
+      data.timetable   = data.timetable   || {};
+
       // Migrate old flat teacher array to objects if needed
       if (data.teachers && typeof data.teachers[0] === 'string') {
         data.teachers = data.teachers.map(name => ({name, isVisiting: false, availability: {}}));
       }
       S = data;
+      slotCounter = S.slots.length ? Math.max(0, ...S.slots.map(s => s.id)) + 1 : 1;
+
       renderSlots();
+      renderDays();
       renderTags('class'); renderTags('room'); renderTags('subject'); renderTags('teacher');
+
+      // Re-render currently active tab
+      const activeTab = document.querySelector('.nav-tab.active, .mobile-tab.active');
+      if (activeTab) {
+        const onclickStr = activeTab.getAttribute('onclick') || '';
+        const match = onclickStr.match(/switchTab\('([^']+)'\)/);
+        if (match && match[1]) {
+          switchTab(match[1]);
+        }
+      } else {
+        switchTab('setup');
+      }
       toast('Data loaded successfully', 'ok');
     } catch(err) {
       toast('Invalid file format', 'error');
@@ -1351,11 +1616,11 @@ function exportCSV() {
   const {days, slots, timetable} = S;
   let csv = `Slot,Start,End,${days.join(',')}\n`;
   slots.forEach(slot => {
-    if (slot.isBreak) { csv += `${slot.label},${slot.start},${slot.end},${days.map(()=>'[Break]').join(',')}\n`; return; }
+    if (slot.isBreak) { csv += `"${slot.label}",${slot.start},${slot.end},${days.map(()=>'[Break]').join(',')}\n`; return; }
     csv += `"${slot.label}",${slot.start},${slot.end},`;
     csv += days.map(day => {
       const e = timetable[cls]?.[day]?.[slot.id];
-      return e ? `"${e.subject} / ${e.teacher} / ${e.room}"` : '—';
+      return e ? `"${e.subject} / ${e.teacher} / ${e.room}"` : 'â€”';
     }).join(',') + '\n';
   });
   const blob = new Blob([csv], {type:'text/csv'});
@@ -1371,9 +1636,9 @@ function exportAll() {
   else saveData();
 }
 
-// ══════════════════════════════════════════
-//  INIT — restore from localStorage
-// ══════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+//  INIT â€” restore from localStorage
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 (function init() {
   try {
     const saved = localStorage.getItem('timetable-manager-data');
@@ -1388,14 +1653,16 @@ function exportAll() {
       data.teachers  = data.teachers  || [];
       data.assignments = data.assignments || {};
       data.timetable = data.timetable || {};
-      // Migrate old flat teacher string array → objects
+      // Migrate old flat teacher string array â†’ objects
       data.teachers = data.teachers.map(t =>
         typeof t === 'string' ? {name: t, isVisiting: false, availability: {}} : t
       );
       S = data;
     }
   } catch(e) { console.warn('Failed to restore saved data:', e); }
+  slotCounter = S.slots.length ? Math.max(0, ...S.slots.map(s => s.id)) + 1 : 1;
   renderSlots();
+  renderDays();
   renderTags('class'); renderTags('room'); renderTags('subject'); renderTags('teacher');
 })();
 </script>
